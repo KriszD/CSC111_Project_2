@@ -22,6 +22,7 @@ class _Vertex:
     item: Any
     kind: str
     neighbours: set[_Vertex]
+    appearences: set[str]
 
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -29,11 +30,13 @@ class _Vertex:
         This vertex is initialized with no neighbours.
 
         Preconditions:
-            - kind in {'user', 'book'}
+            - kind in {'actor', 'movie'}
+            - self.appearences = set() or kind = 'actor'
         """
         self.item = item
         self.kind = kind
         self.neighbours = set()
+        self.appearences = set()
 
 
 class Graph:
@@ -114,3 +117,6 @@ class Graph:
             return {v.item for v in self._vertices.values() if v.kind == kind}
         else:
             return set(self._vertices.keys())
+
+    def add_appearences(self, movie: str) -> None:
+        """Adds a movie the actor has appeared in to a set."""
