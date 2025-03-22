@@ -118,5 +118,14 @@ class Graph:
         else:
             return set(self._vertices.keys())
 
-    def add_appearences(self, movie: str) -> None:
-        """Adds a movie the actor has appeared in to a set."""
+    def add_appearences(self, actor: str, movie: str) -> None:
+        """Adds a movie the actor has appeared in to a set.
+        Raise a ValueError if actor does not appear as a vertex in this graph."""
+        if actor in self._vertices:
+            self._vertices[actor].appearences.add(movie)
+        else:
+            raise ValueError
+
+    def item_in_graph(self, item: str) -> bool:
+        """Returns whether the given item appears as a vertex in this graph."""
+        return item in self._vertices
