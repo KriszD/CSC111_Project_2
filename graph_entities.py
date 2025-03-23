@@ -144,6 +144,15 @@ class Graph:
         """Returns whether the given item appears as a vertex in this graph."""
         return item in self._vertices
 
+    def get_common_movies(self, item1: str, item2: str) -> set:
+        """Returns the movies that are in common between two actors"""
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
+            v2 = self._vertices[item2]
+            return v1.neighbours.intersection(v2.neighbours)
+        else:
+            raise ValueError
+
     def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
         """Return a dictionary mapping each vertex to the distance from the target vertex, as a dictionary mapping each
         vertex to their immediate parent vertex that was involved in calculating the shortest path.

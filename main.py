@@ -2,6 +2,36 @@
 from graph_entities import Graph
 
 
+def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
+    """Given the name of two actors, find the path between them, return two lists, one with movies and one without"""
+    path = graph.shortest_path(actor1, actor2)
+    path_with_movies = []
+
+    for i in range(len(path) - 1):
+        path_with_movies.append(path[i])  # add actor
+        movies = graph.get_common_movies(path[i], path[i + 1])  # get intersecting movies
+        path_with_movies.append(movies)  # add movie(s)
+
+    path_with_movies.append(path[-1])  # add back the final actor
+
+    return path, path_with_movies
+
+
+def print_bacon_path(graph: Graph, actor1: str, actor2: str) -> None:
+    """Cleanly print out the bacon path between two actors."""
+    _, path = bacon_path(graph, actor1, actor2)
+
+    formatted_path = []
+
+    for item in path:
+        if isinstance(item, set):
+            formatted_path.append(f"[{', '.join(item)}]")
+        else:
+            formatted_path.append(item)
+
+    print(" -->> ".join(formatted_path))
+
+
 def bacon_number(graph: Graph, actor1: str, actor2: str) -> int:
     """Given the name of two actors, calculate their bacon number (the shortest path between them)
 
@@ -16,7 +46,7 @@ def bacon_number(graph: Graph, actor1: str, actor2: str) -> int:
     >>> bacon_number(g, 'Kevin Bacon', 'Dwayne Johnson')
     2
     """
-    path = graph.shortest_path(actor1, actor2)
+    path, _ = bacon_path(graph, actor1, actor2)
     return len(path) - 1
 
 
