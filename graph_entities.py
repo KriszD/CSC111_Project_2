@@ -1,6 +1,7 @@
 """Graph Classes"""
 from __future__ import annotations
 from typing import Any
+from heapq import heapify, heappop, heappush
 
 
 class _Vertex:
@@ -129,3 +130,35 @@ class Graph:
     def item_in_graph(self, item: str) -> bool:
         """Returns whether the given item appears as a vertex in this graph."""
         return item in self._vertices
+
+
+    def shortest_distance(self, item: str) -> dict[Any, float]:
+        """
+
+        :param item:
+        :return:
+        """
+        if item not in self._vertices:
+            raise ValueError
+
+        distances = {node:  float("inf") for node in self._vertices}
+        distances[item] = 0
+
+        pq = [(0, item)]  # initialize a priority queue with the root element
+        heapify(pq)
+
+        visited = set()
+
+        while pq:
+            current_distance, current_node = heappop(pq)
+            if current_node in visited:
+                continue
+            visited.add(current_node)
+
+            for neighbour in self._vertices[current_node].neighbours:
+                possible_distance = current_distance + 1
+                if possible_distance < distances[neighbour.item]:
+                    distances[neighbour.item] = possible_distance
+                    heappush(pq, (possible_distance, neighbour.item))
+
+        return distances
