@@ -144,9 +144,18 @@ class Graph:
         """Returns whether the given item appears as a vertex in this graph."""
         return item in self._vertices
 
+    def get_common_movies(self, item1: str, item2: str) -> set:
+        """Returns the movies that are in common between two actors"""
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
+            v2 = self._vertices[item2]
+            return v1.neighbours.intersection(v2.neighbours)
+        else:
+            raise ValueError
+
     def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
-        """Return a dictionary mapping each node to the distance from the target node, as a dictionary mapping each
-        node to their immediate parent node that was involved in calculating the shortest path.
+        """Return a dictionary mapping each vertex to the distance from the target vertex, as a dictionary mapping each
+        vertex to their immediate parent vertex that was involved in calculating the shortest path.
 
         This is an implementation of Dijkstra's shortest path algorithm.
         >>> g = Graph()
@@ -161,19 +170,19 @@ class Graph:
         >>> g.add_edge("B", "D")
         >>> g.add_edge("C", "D")
         >>> g.add_edge("D", "E")
-        >>> distances_of_nodes, predecessors_of_nodes = g.shortest_distance("A")
-        >>> distances_of_nodes
+        >>> distances_of_vertices, predecessors_of_vertices = g.shortest_distance("A")
+        >>> distances_of_vertices
         {'A': 0, 'B': 1, 'C': 1, 'D': 2, 'E': 3}
-        >>> predecessors_of_nodes
+        >>> predecessors_of_vertices
         {'A': -1, 'B': 'A', 'C': 'A', 'D': 'B', 'E': 'D'}
         """
         if item not in self._vertices:
             raise ValueError
 
-        distances = {node: float("inf") for node in self._vertices}
+        distances = {vertex: float("inf") for vertex in self._vertices}
         distances[item] = 0
 
-        predecessors: dict[Any, Optional[str]] = {node: None for node in self._vertices}
+        predecessors: dict[Any, Optional[str]] = {vertex: None for vertex in self._vertices}
 
         pq = [(0, item)]  # initialize a priority queue with the root element
         heapify(pq)
@@ -181,22 +190,22 @@ class Graph:
         visited = set()
 
         while pq:
-            current_distance, current_node = heappop(pq)
-            if current_node in visited:
+            current_distance, current_vertex = heappop(pq)
+            if current_vertex in visited:
                 continue
-            visited.add(current_node)
+            visited.add(current_vertex)
 
-            for neighbour in self._vertices[current_node].neighbours:
+            for neighbour in self._vertices[current_vertex].neighbours:
                 possible_distance = current_distance + 1  # default weight of 1 since this is an unweighted graph
                 if possible_distance < distances[neighbour.item]:
                     distances[neighbour.item] = possible_distance
-                    predecessors[neighbour.item] = current_node
+                    predecessors[neighbour.item] = current_vertex
                     heappush(pq, (possible_distance, neighbour.item))
 
         return distances, predecessors
 
     def shortest_path(self, starting_item: Any, target_item: Any) -> list[Any]:
-        """Return a list of the item names of each node starting from the source item and ending with the target item
+        """Return a list of the item names of each vertex starting from the source item and ending with the target item
         that is the shortest path between the starting item and the target item.
 
         This is an implementation of Dijkstra's shortest path algorithm.
@@ -235,12 +244,12 @@ class Graph:
         """
         _, predecessors = self.shortest_distance(starting_item)
         path = []
-        current_node = target_item
+        current_vertex = target_item
 
-        # return from the target node through the predecessors
-        while current_node is not None:
-            path.append(current_node)
-            current_node = predecessors.get(current_node)
+        # return from the target vertex through the predecessors
+        while current_vertex is not None:
+            path.append(current_vertex)
+            current_vertex = predecessors.get(current_vertex)
 
         path.reverse()
 
