@@ -132,10 +132,27 @@ class Graph:
         return item in self._vertices
 
     def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
-        """
+        """Return a dictionary mapping each node to the distance from the target node, as a dictionary mapping each
+        node to their immediate parent node that was involved in calculating the shortest path.
 
-        :param item:
-        :return:
+        This is an implementation of Dijkstra's shortest path algorithm.
+        >>> g = Graph()
+        >>> g.add_vertex('A', 'actor')
+        >>> g.add_vertex('B', 'actor')
+        >>> g.add_vertex('C', 'actor')
+        >>> g.add_vertex('D', 'actor')
+        >>> g.add_vertex('E', 'actor')
+        >>> g.add_edge("A", "B")
+        >>> g.add_edge("A", "C")
+        >>> g.add_edge("B", "C")
+        >>> g.add_edge("B", "D")
+        >>> g.add_edge("C", "D")
+        >>> g.add_edge("D", "E")
+        >>> distances_of_nodes, predecessors_of_nodes = g.shortest_distance("A")
+        >>> distances_of_nodes
+        {'A': 0, 'B': 1, 'C': 1, 'D': 2, 'E': 3}
+        >>> predecessors_of_nodes
+        {'A': -1, 'B': 'A', 'C': 'A', 'D': 'B', 'E': 'D'}
         """
         if item not in self._vertices:
             raise ValueError
