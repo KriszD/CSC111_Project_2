@@ -19,8 +19,7 @@ def bacon_number(graph: Graph, actor1: str, actor2: str) -> int:
 
 
 def average_bacon_number(graph: Graph, actor: str) -> int:
-    """Given the name of an actor find their average bacon number with all other actors in the graph
-    """
+    """Given the name of an actor find their average bacon number with all other actors in the graph"""
     actors = graph.get_all_vertices()
 
     sum = 0
