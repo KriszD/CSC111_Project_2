@@ -160,7 +160,7 @@ class Graph:
         distances = {node: float("inf") for node in self._vertices}
         distances[item] = 0
 
-        predecessors = {node: None for node in self._vertices}
+        predecessors: dict[Any, Optional[str]] = {node: None for node in self._vertices}
 
         pq = [(0, item)]  # initialize a priority queue with the root element
         heapify(pq)
@@ -174,7 +174,7 @@ class Graph:
             visited.add(current_node)
 
             for neighbour in self._vertices[current_node].neighbours:
-                possible_distance = current_distance + 1
+                possible_distance = current_distance + 1  # default weight of 1 since this is an unweighted graph
                 if possible_distance < distances[neighbour.item]:
                     distances[neighbour.item] = possible_distance
                     predecessors[neighbour.item] = current_node
@@ -231,4 +231,8 @@ class Graph:
 
         path.reverse()
 
-        return path
+        if path:
+            return path
+        else:
+            print("No Valid Path Found.")
+            return []
