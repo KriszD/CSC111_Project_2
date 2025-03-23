@@ -1,6 +1,6 @@
 """Graph Classes"""
 from __future__ import annotations
-from typing import Any
+from typing import Any, Optional
 from heapq import heapify, heappop, heappush
 
 
@@ -131,8 +131,7 @@ class Graph:
         """Returns whether the given item appears as a vertex in this graph."""
         return item in self._vertices
 
-
-    def shortest_distance(self, item: str) -> dict[Any, float]:
+    def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
         """
 
         :param item:
@@ -141,8 +140,10 @@ class Graph:
         if item not in self._vertices:
             raise ValueError
 
-        distances = {node:  float("inf") for node in self._vertices}
+        distances = {node: float("inf") for node in self._vertices}
         distances[item] = 0
+
+        predecessors = {node: None for node in self._vertices}
 
         pq = [(0, item)]  # initialize a priority queue with the root element
         heapify(pq)
@@ -159,6 +160,58 @@ class Graph:
                 possible_distance = current_distance + 1
                 if possible_distance < distances[neighbour.item]:
                     distances[neighbour.item] = possible_distance
+                    predecessors[neighbour.item] = current_node
                     heappush(pq, (possible_distance, neighbour.item))
 
-        return distances
+        return distances, predecessors
+
+    def shortest_path(self, starting_item: Any, target_item: Any) -> list[Any]:
+        """Return a list of the item names of each node starting from the source item and ending with the target item
+        that is the shortest path between the starting item and the target item.
+
+        This is an implementation of Dijkstra's shortest path algorithm.
+        >>> g = Graph()
+        >>> g.add_vertex('A', 'actor')
+        >>> g.add_vertex('B', 'actor')
+        >>> g.add_vertex('C', 'actor')
+        >>> g.add_vertex('D', 'actor')
+        >>> g.add_vertex('E', 'actor')
+        >>> g.add_vertex('F', 'actor')
+        >>> g.add_vertex('G', 'actor')
+        >>> g.add_vertex('H', 'actor')
+        >>> g.add_vertex('I', 'actor')
+        >>> g.add_edge("A", "B")
+        >>> g.add_edge("A", "C")
+        >>> g.add_edge("B", "C")
+        >>> g.add_edge("B", "D")
+        >>> g.add_edge("C", "D")
+        >>> g.add_edge("D", "E")
+        >>> g.add_edge("E", "F")
+        >>> g.add_edge("F", "G")
+        >>> g.add_edge("G", "H")
+        >>> g.add_edge("H", "I")
+        >>> g.add_edge("A", "H")
+        >>> g.add_edge("C", "G")
+        >>> print(g.shortest_path('A', 'I'))
+        ['A', 'H', 'I']
+        >>> print(g.shortest_path('A', 'F'))
+        ['A', 'C', 'G', 'F']
+        >>> print(g.shortest_path('B', 'G'))
+        ['B', 'C', 'G']
+        >>> print(g.shortest_path('C', 'E'))
+        ['C', 'D', 'E']
+        >>> print(g.shortest_path('F', 'I'))
+        ['F', 'G', 'H', 'I']
+        """
+        _, predecessors = self.shortest_distance(starting_item)
+        path = []
+        current_node = target_item
+
+        # return from the target node through the predecessors
+        while current_node is not None:
+            path.append(current_node)
+            current_node = predecessors.get(current_node)
+
+        path.reverse()
+
+        return path
