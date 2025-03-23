@@ -12,7 +12,9 @@ def bacon_number(graph: Graph, actor1: str, actor2: str) -> int:
     >>> g.add_edge('Kevin Bacon', 'John Cena')
     >>> g.add_edge('John Cena', 'Dwayne Johnson')
     >>> bacon_number(g, 'Kevin Bacon', 'Kevin Bacon')
+    0
     >>> bacon_number(g, 'Kevin Bacon', 'Dwayne Johnson')
+    2
     """
     path = graph.shortest_path(actor1, actor2)
     return len(path) - 1
