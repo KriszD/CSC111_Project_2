@@ -18,12 +18,14 @@ class _Vertex:
     Representation Invariants:
         - self not in self.neighbours
         - all(self in u.neighbours for u in self.neighbours)
-        - self.kind in {'user', 'book'}
+        - self.kind in {'movie', 'actor'}
     """
     item: Any
     kind: str
     neighbours: set[_Vertex]
     appearences: set[str]
+    cast_members: set[str]
+    movie_info: tuple[int, int, float]
 
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -33,11 +35,13 @@ class _Vertex:
         Preconditions:
             - kind in {'actor', 'movie'}
             - self.appearences = set() or kind = 'actor'
+            - self.cast_members = set() or kind = 'movie'
         """
         self.item = item
         self.kind = kind
         self.neighbours = set()
         self.appearences = set()
+        self.cast_members = set()
 
 
 class Graph:
@@ -124,6 +128,15 @@ class Graph:
         Raise a ValueError if actor does not appear as a vertex in this graph."""
         if actor in self._vertices:
             self._vertices[actor].appearences.add(movie)
+        else:
+            raise ValueError
+
+    def add_movie_info(self, movie: str, actors: set, movie_info: tuple) -> None:
+        """Adds cast members and movie info (year, votes, rating) to a movie
+        Raise a ValueError if movie does not appear as a vertex in this graph."""
+        if movie in self._vertices:
+            self._vertices[movie].cast_members.update(actors)
+            self._vertices[movie].movie_info = movie_info
         else:
             raise ValueError
 
