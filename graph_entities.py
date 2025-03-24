@@ -297,3 +297,21 @@ class Graph:
             return v1.similarity_score(v2)
         else:
             raise ValueError
+
+    def recommend_movies(self, movie: str, limit: int) -> list[str]:
+        """Return a list of up to <limit> recommended movies based on similarity to the given movie.
+
+        Preconditions:
+            - movie in self._vertices
+            - self._vertices[movie].kind == 'movie'
+            - limit >= 1
+        """
+        recommendations = {}
+        for other_movie in self.get_all_vertices('movie'):
+            if other_movie != movie:
+                sim_score = self.get_similarity_score(movie, other_movie)
+                if sim_score > 0:
+                    recommendations[other_movie] = sim_score
+
+        sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
+        return sorted_recommendations[:limit]
