@@ -57,7 +57,7 @@ def create_movie_graph(casts: dict, movies: dict) -> Graph:
         graph.add_movie_info(movie, casts[movie], movies[movie])
         added_vertices.add(movie)
         for movie2 in added_vertices:
-            if movie != movie2 and any(actor for actor in casts[movie2] if actor in casts[movie]):
+            if movie != movie2 and casts[movie].intersection(casts[movie2]) != set():
                 graph.add_edge(movie, movie2)
 
     return graph
