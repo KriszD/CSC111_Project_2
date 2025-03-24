@@ -302,6 +302,9 @@ class Graph:
             - self._vertices[movie].kind == 'movie'
             - limit >= 1
         """
+        if movie not in self._vertices or self._vertices[movie].kind != 'movie':
+            raise ValueError
+
         recommendations = {}
         for other_movie in self.get_all_vertices('movie'):
             if other_movie != movie:
@@ -325,7 +328,7 @@ class Graph:
 
     def recommend_movies_filter(self, movie: str, limit: int, movie_filter: str, range_of_filter: float) -> list[str]:
         """Return a list of up to <limit> recommended movies based on similarity to the given movie where the movies
-        have gone through a filter that filters movies based on some criteria.
+        have gone through a filter that filters movies based on either rating or release date.
 
         Preconditions:
             - movie in self._vertices
