@@ -43,20 +43,16 @@ class _Vertex:
         self.appearences = set()
         self.cast_members = set()
 
-    def degree(self) -> int:
-        """Return the degree of this vertex."""
-        return len(self.neighbours)
-
     def similarity_score(self, other: _Vertex) -> float:
         """Return the similarity score between this vertex and other.
 
         See Assignment handout for definition of similarity score.
         """
-        if self.degree() == 0 or other.degree() == 0:
+        if self.cast_members == 0 or other.cast_members == 0:
             return 0
         else:
-            sim_intersection = self.neighbours.intersection(other.neighbours)
-            sim_union = self.neighbours.union(other.neighbours)
+            sim_intersection = self.cast_members.intersection(other.cast_members)
+            sim_union = self.cast_members.union(other.cast_members)
             return len(sim_intersection) / len(sim_union)
 
 
@@ -298,7 +294,7 @@ class Graph:
         else:
             raise ValueError
 
-    def recommend_movies(self, movie: str, limit: int) -> list[str]:
+    def recommend_movies(self, movie: str, limit: Optional[int]) -> list[str]:
         """Return a list of up to <limit> recommended movies based on similarity to the given movie.
 
         Preconditions:
@@ -314,4 +310,44 @@ class Graph:
                     recommendations[other_movie] = sim_score
 
         sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
+        if limit:
+            return sorted_recommendations[:limit]
+        else:
+            return sorted_recommendations
+
+    @staticmethod
+    def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float):
+        """Sorting a dictionary into a list based on absolute difference"""
+        filtered_items = {k: v for k, v in unsorted_dict.items() if abs(v - value) <= threshold}
+        sorted_keys = sorted(filtered_items, key=lambda k: abs(filtered_items[k] - value))
+
+        return sorted_keys
+
+    def recommend_movies_filter(self, movie: str, limit: int, movie_filter: str, range_of_filter: float) -> list[str]:
+        """Return a list of up to <limit> recommended movies based on similarity to the given movie where the movies
+        have gone through a filter that filters movies based on some criteria.
+
+        Preconditions:
+            - movie in self._vertices
+            - self._vertices[movie].kind == 'movie'
+            - limit >= 1
+            - filter in {'rating', 'release date'}
+        """
+        if movie not in self._vertices or self._vertices[movie].kind != 'movie':
+            raise ValueError
+
+        if movie_filter not in {'rating', 'release date'}:
+            raise ValueError
+
+        recommendations = self.recommend_movies(movie)
+        movie_info_index = 2 if movie_filter == 'rating' else 0
+        movie_value = self._vertices[movie].movie_info[movie_info_index]
+
+        new_recommendations = {
+            recommendation: self._vertices[recommendation].movie_info[movie_info_index]
+            for recommendation in recommendations
+        }
+
+        sorted_recommendations = self.sort_by_closeness(new_recommendations, movie_value, range_of_filter)
+
         return sorted_recommendations[:limit]
