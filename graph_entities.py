@@ -27,7 +27,7 @@ class _Vertex:
     neighbours: set[_Vertex]
     appearences: set[str]
     cast_members: set[str]
-    movie_info: tuple[int, int, float]
+    movie_info: tuple[int, int, float]  # (year, votes, rating)
 
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -163,7 +163,7 @@ class Graph:
         if item1 in self._vertices and item2 in self._vertices:
             v1 = self._vertices[item1]
             v2 = self._vertices[item2]
-            return v1.neighbours.intersection(v2.neighbours)
+            return v1.appearences.intersection(v2.appearences)
         else:
             raise ValueError
 
@@ -418,3 +418,32 @@ class Graph:
             average_bacon_numbers[actor] = self.average_bacon_number(actor)
 
         return average_bacon_numbers
+
+    def filter_by_key(self, actor1: str, actor2: str, key: str,
+                      upper: int, lower: int, movies: dict) -> tuple[bool, set]:
+        """Checks if two actors have a movie connecting them that matches the given filer
+
+        Preconditions:
+        - key in {'year', 'rating'}
+        """
+        if actor1 in self._vertices and actor2 in self._vertices:
+            v1 = self._vertices[actor1]
+            v2 = self._vertices[actor2]
+
+            if key == 'year':
+                common = v1.appearences.intersection(v2.appearences)
+                common_filtered = {movie for movie in common if lower <= movies[movie][1][0] <= upper}
+                if common_filtered:
+                    return True, common_filtered
+
+            if key == 'rating':
+                common = v1.appearences.intersection(v2.appearences)
+                common_filtered = {movie for movie in common if lower <= movies[movie][1][2] <= upper}
+                if common_filtered:
+                    return True, common_filtered
+
+            else:
+                raise KeyError
+
+        else:
+            raise ValueError
