@@ -1,9 +1,7 @@
 """Graph Classes"""
 from __future__ import annotations
-
 from collections import deque
 from typing import Any, Optional
-from heapq import heapify, heappop, heappush
 
 
 class _Vertex:
@@ -420,7 +418,7 @@ class Graph:
         return average_bacon_numbers
 
     def filter_by_key(self, actor1: str, actor2: str, key: str,
-                      upper: int, lower: int, movies: dict) -> tuple[bool, set]:
+                      upper: int, lower: int, movies: dict) -> tuple[bool, set[str]] | None:
         """Checks if two actors have a movie connecting them that matches the given filer
 
         Preconditions:
