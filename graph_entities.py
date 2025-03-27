@@ -1,7 +1,7 @@
 """Graph Classes"""
 from __future__ import annotations
 from collections import deque
-from typing import Any, Optional
+from typing import Any
 
 
 class _Vertex:
@@ -165,28 +165,9 @@ class Graph:
         else:
             raise ValueError
 
-    def get_similarity_score(self, item1: Any, item2: Any) -> float:
-        """Return the similarity score between the two given items in this graph.
-
-        Raise a ValueError if item1 or item2 do not appear as vertices in this graph.
-
-        >>> g = Graph()
-        >>> for i in range(0, 6):
-        ...     g.add_vertex(str(i), kind='user')
-        >>> g.add_edge('0', '2')
-        >>> g.add_edge('0', '3')
-        >>> g.add_edge('0', '4')
-        >>> g.add_edge('1', '3')
-        >>> g.add_edge('1', '4')
-        >>> g.add_edge('1', '5')
-        >>> g.get_similarity_score('0', '1')
-        0.5
-        """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1, v2 = self._vertices[item1], self._vertices[item2]
-            return v1.similarity_score(v2)
-        else:
-            raise ValueError
+#############################
+# BFS (Breadth First Search)
+#############################
 
     def shortest_path_bfs(self, starting_item: str, target_item: str) -> str | list[Any]:
         """Find the shortest path between two actors using BFS."""
@@ -257,5 +238,32 @@ class Graph:
             else:
                 raise KeyError
 
+        else:
+            raise ValueError
+
+###################
+# Movie Similarity
+###################
+
+    def get_similarity_score(self, item1: Any, item2: Any) -> float:
+        """Return the similarity score between the two given items in this graph.
+
+        Raise a ValueError if item1 or item2 do not appear as vertices in this graph.
+
+        >>> g = Graph()
+        >>> for i in range(0, 6):
+        ...     g.add_vertex(str(i), kind='user')
+        >>> g.add_edge('0', '2')
+        >>> g.add_edge('0', '3')
+        >>> g.add_edge('0', '4')
+        >>> g.add_edge('1', '3')
+        >>> g.add_edge('1', '4')
+        >>> g.add_edge('1', '5')
+        >>> g.get_similarity_score('0', '1')
+        0.5
+        """
+        if item1 in self._vertices and item2 in self._vertices:
+            v1, v2 = self._vertices[item1], self._vertices[item2]
+            return v1.similarity_score(v2)
         else:
             raise ValueError
