@@ -22,26 +22,6 @@ def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
     return path, path_with_movies
 
 
-def bacon_path_filtered(graph: Graph, actor1: str, actor2: str, choice: int) -> tuple[list, list]:
-    """Given the name of two actors, find the path between them, return two lists, one with movies and one without"""
-    actors = graph.get_all_vertices('actor')
-    if actor1 not in actors or actor2 not in actors:
-        print("At least one of those actors is not in this graph.")
-        raise ValueError
-
-    path = graph.shortest_path_bfs_filtered(actor1, actor2, choice)
-    path_with_movies = []
-
-    for i in range(len(path) - 1):
-        path_with_movies.append(path[i])  # add actor
-        movies = graph.get_common_movies(path[i], path[i + 1])  # get intersecting movies
-        path_with_movies.append(movies)  # add movie(s)
-
-    path_with_movies.append(path[-1])  # add back the final actor
-
-    return path, path_with_movies
-
-
 def print_bacon_path(graph: Graph, actor1: str, actor2: str) -> None:
     """Cleanly print out the bacon path between two actors."""
     _, path = bacon_path(graph, actor1, actor2)
