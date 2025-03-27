@@ -88,7 +88,7 @@ def ranking(data: dict[str, float], limit: int) -> None:
     for actor, avg in data.items():
         if i == limit:
             return
-        if avg > 0:
+        if avg > 1:
             print(i + 1, ":", actor, "with average bacon number:", avg)
             i += 1
 
@@ -121,7 +121,7 @@ def recommend_movies(movies: dict, input_movie: Any, limit: int) -> list[Any]:
 
 
 def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float) -> list[Any]:
-    """Sorting a dictionary into a list based on absolute difference"""
+    """Sorting a dictionary into a list based on absolute difference."""
     filtered_items = {k: v for k, v in unsorted_dict.items() if abs(v - value) <= threshold}
     sorted_keys = sorted(filtered_items, key=lambda k: abs(filtered_items[k] - value))
 
@@ -161,23 +161,26 @@ def recommend_movies_filter(movies: dict, input_movie: str, limit: int, movie_fi
 if __name__ == '__main__':
     actor_graph, _ = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
-    # running = True
-    # menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
-    #         '(3) Bacon Number between two actors', '(4) Exit']
-    # while running:
-    #     choice = int(input("What is your choice?"))
-    #     if choice not in [1, 2, 3, 4]:
-    #         print("Invalid Choice, try Again.")
-    #     if choice == 1:
-    #         limit = input(int("How many actors? "))
-    #         ranking(actor_graph, limit)
-    #     if choice == 2:
-    #         actor = str(input("Actor Name: "))
-    #         print(actor, "'s Average Bacon Number is:", average_bacon_number(actor_graph, actor))
-    #     if choice == 3:
-    #         actor1 = str(input("Actor 1 Name: "))
-    #         actor2 = str(input("Actor 2 Name: "))
-    #         print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1, actor2))
-    #     if choice == 4:
-    #         print("Bye!")
-    #         running = False
+    running = True
+    menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
+            '(3) Bacon Number/Path between two actors', '(4) Exit']
+    while running:
+        print('Your options are: ', menu)
+        choice = int(input("What is your choice?"))
+        if choice not in [1, 2, 3, 4]:
+            print("Invalid Choice, try Again.")
+        if choice == 1:
+            limit = int(input("How many actors? "))
+            ranking(average_bacon_numbers, limit)
+        if choice == 2:
+            actor = str(input("Actor Name: "))
+            print(actor, "'s Average Bacon Number is:", average_bacon_number(actor_graph, actor))
+        if choice == 3:
+            actor1 = str(input("Actor 1 Name: "))
+            actor2 = str(input("Actor 2 Name: "))
+            print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1, actor2))
+            print("A path between them is: ")
+            print_bacon_path(actor_graph, actor1, actor2)
+        if choice == 4:
+            print("Bye!")
+            running = False

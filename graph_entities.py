@@ -201,7 +201,7 @@ class Graph:
 
     def filter_by_key(self, actor1: str, actor2: str, key: str,
                       upper: int, lower: int, movies: dict) -> tuple[bool, set[str]] | None:
-        """Checks if two actors have a movie connecting them that matches the given filer
+        """Checks if two actors have a movie connecting them that matches the given filter
 
         Preconditions:
         - key in {'year', 'rating'}
