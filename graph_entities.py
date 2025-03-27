@@ -1,5 +1,7 @@
 """Graph Classes"""
 from __future__ import annotations
+
+from collections import deque
 from typing import Any, Optional
 from heapq import heapify, heappop, heappush
 
@@ -165,111 +167,111 @@ class Graph:
         else:
             raise ValueError
 
-    def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
-        """Return a dictionary mapping each vertex to the distance from the target vertex, as a dictionary mapping each
-        vertex to their immediate parent vertex that was involved in calculating the shortest path.
-
-        This is an implementation of Dijkstra's shortest path algorithm.
-        >>> g = Graph()
-        >>> g.add_vertex('A', 'actor')
-        >>> g.add_vertex('B', 'actor')
-        >>> g.add_vertex('C', 'actor')
-        >>> g.add_vertex('D', 'actor')
-        >>> g.add_vertex('E', 'actor')
-        >>> g.add_edge("A", "B")
-        >>> g.add_edge("A", "C")
-        >>> g.add_edge("B", "C")
-        >>> g.add_edge("B", "D")
-        >>> g.add_edge("C", "D")
-        >>> g.add_edge("D", "E")
-        >>> distances_of_vertices, predecessors_of_vertices = g.shortest_distance("A")
-        >>> distances_of_vertices
-        {'A': 0, 'B': 1, 'C': 1, 'D': 2, 'E': 3}
-        >>> predecessors_of_vertices
-        {'A': -1, 'B': 'A', 'C': 'A', 'D': 'B', 'E': 'D'}
-        """
-        if item not in self._vertices:
-            raise ValueError
-
-        distances = {vertex: float("inf") for vertex in self._vertices}
-        distances[item] = 0
-
-        predecessors: dict[Any, Optional[str]] = {vertex: None for vertex in self._vertices}
-
-        pq = [(0, item)]  # initialize a priority queue with the root element
-        heapify(pq)
-
-        visited = set()
-
-        while pq:
-            current_distance, current_vertex = heappop(pq)
-            if current_vertex in visited:
-                continue
-            visited.add(current_vertex)
-
-            for neighbour in self._vertices[current_vertex].neighbours:
-                possible_distance = current_distance + 1  # default weight of 1 since this is an unweighted graph
-                if possible_distance < distances[neighbour.item]:
-                    distances[neighbour.item] = possible_distance
-                    predecessors[neighbour.item] = current_vertex
-                    heappush(pq, (possible_distance, neighbour.item))
-
-        return distances, predecessors
-
-    def shortest_path(self, starting_item: Any, target_item: Any) -> list[Any]:
-        """Return a list of the item names of each vertex starting from the source item and ending with the target item
-        that is the shortest path between the starting item and the target item.
-
-        This is an implementation of Dijkstra's shortest path algorithm.
-        >>> g = Graph()
-        >>> g.add_vertex('A', 'actor')
-        >>> g.add_vertex('B', 'actor')
-        >>> g.add_vertex('C', 'actor')
-        >>> g.add_vertex('D', 'actor')
-        >>> g.add_vertex('E', 'actor')
-        >>> g.add_vertex('F', 'actor')
-        >>> g.add_vertex('G', 'actor')
-        >>> g.add_vertex('H', 'actor')
-        >>> g.add_vertex('I', 'actor')
-        >>> g.add_edge("A", "B")
-        >>> g.add_edge("A", "C")
-        >>> g.add_edge("B", "C")
-        >>> g.add_edge("B", "D")
-        >>> g.add_edge("C", "D")
-        >>> g.add_edge("D", "E")
-        >>> g.add_edge("E", "F")
-        >>> g.add_edge("F", "G")
-        >>> g.add_edge("G", "H")
-        >>> g.add_edge("H", "I")
-        >>> g.add_edge("A", "H")
-        >>> g.add_edge("C", "G")
-        >>> print(g.shortest_path('A', 'I'))
-        ['A', 'H', 'I']
-        >>> print(g.shortest_path('A', 'F'))
-        ['A', 'C', 'G', 'F']
-        >>> print(g.shortest_path('B', 'G'))
-        ['B', 'C', 'G']
-        >>> print(g.shortest_path('C', 'E'))
-        ['C', 'D', 'E']
-        >>> print(g.shortest_path('F', 'I'))
-        ['F', 'G', 'H', 'I']
-        """
-        _, predecessors = self.shortest_distance(starting_item)
-        path = []
-        current_vertex = target_item
-
-        # return from the target vertex through the predecessors
-        while current_vertex is not None:
-            path.append(current_vertex)
-            current_vertex = predecessors.get(current_vertex)
-
-        path.reverse()
-
-        if path:
-            return path
-        else:
-            print("No Valid Path Found.")
-            return []
+    # def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
+    #     """Return a dictionary mapping each vertex to the distance from the target vertex, as a dictionary
+    #     mapping each vertex to their immediate parent vertex that was involved in calculating the shortest path.
+    #
+    #     This is an implementation of Dijkstra's shortest path algorithm.
+    #     >>> g = Graph()
+    #     >>> g.add_vertex('A', 'actor')
+    #     >>> g.add_vertex('B', 'actor')
+    #     >>> g.add_vertex('C', 'actor')
+    #     >>> g.add_vertex('D', 'actor')
+    #     >>> g.add_vertex('E', 'actor')
+    #     >>> g.add_edge("A", "B")
+    #     >>> g.add_edge("A", "C")
+    #     >>> g.add_edge("B", "C")
+    #     >>> g.add_edge("B", "D")
+    #     >>> g.add_edge("C", "D")
+    #     >>> g.add_edge("D", "E")
+    #     >>> distances_of_vertices, predecessors_of_vertices = g.shortest_distance("A")
+    #     >>> distances_of_vertices
+    #     {'A': 0, 'B': 1, 'C': 1, 'D': 2, 'E': 3}
+    #     >>> predecessors_of_vertices
+    #     {'A': -1, 'B': 'A', 'C': 'A', 'D': 'B', 'E': 'D'}
+    #     """
+    #     if item not in self._vertices:
+    #         raise ValueError
+    #
+    #     distances = {vertex: float("inf") for vertex in self._vertices}
+    #     distances[item] = 0
+    #
+    #     predecessors: dict[Any, Optional[str]] = {vertex: None for vertex in self._vertices}
+    #
+    #     pq = [(0, item)]  # initialize a priority queue with the root element
+    #     heapify(pq)
+    #
+    #     visited = set()
+    #
+    #     while pq:
+    #         current_distance, current_vertex = heappop(pq)
+    #         if current_vertex in visited:
+    #             continue
+    #         visited.add(current_vertex)
+    #
+    #         for neighbour in self._vertices[current_vertex].neighbours:
+    #             possible_distance = current_distance + 1  # default weight of 1 since this is an unweighted graph
+    #             if possible_distance < distances[neighbour.item]:
+    #                 distances[neighbour.item] = possible_distance
+    #                 predecessors[neighbour.item] = current_vertex
+    #                 heappush(pq, (possible_distance, neighbour.item))
+    #
+    #     return distances, predecessors
+    #
+    # def shortest_path(self, starting_item: Any, target_item: Any) -> list[Any]:
+    #     """Return a list of the item names of each vertex starting from the source item and ending with
+    #     the target item that is the shortest path between the starting item and the target item.
+    #
+    #     This is an implementation of Dijkstra's shortest path algorithm.
+    #     >>> g = Graph()
+    #     >>> g.add_vertex('A', 'actor')
+    #     >>> g.add_vertex('B', 'actor')
+    #     >>> g.add_vertex('C', 'actor')
+    #     >>> g.add_vertex('D', 'actor')
+    #     >>> g.add_vertex('E', 'actor')
+    #     >>> g.add_vertex('F', 'actor')
+    #     >>> g.add_vertex('G', 'actor')
+    #     >>> g.add_vertex('H', 'actor')
+    #     >>> g.add_vertex('I', 'actor')
+    #     >>> g.add_edge("A", "B")
+    #     >>> g.add_edge("A", "C")
+    #     >>> g.add_edge("B", "C")
+    #     >>> g.add_edge("B", "D")
+    #     >>> g.add_edge("C", "D")
+    #     >>> g.add_edge("D", "E")
+    #     >>> g.add_edge("E", "F")
+    #     >>> g.add_edge("F", "G")
+    #     >>> g.add_edge("G", "H")
+    #     >>> g.add_edge("H", "I")
+    #     >>> g.add_edge("A", "H")
+    #     >>> g.add_edge("C", "G")
+    #     >>> print(g.shortest_path('A', 'I'))
+    #     ['A', 'H', 'I']
+    #     >>> print(g.shortest_path('A', 'F'))
+    #     ['A', 'C', 'G', 'F']
+    #     >>> print(g.shortest_path('B', 'G'))
+    #     ['B', 'C', 'G']
+    #     >>> print(g.shortest_path('C', 'E'))
+    #     ['C', 'D', 'E']
+    #     >>> print(g.shortest_path('F', 'I'))
+    #     ['F', 'G', 'H', 'I']
+    #     """
+    #     _, predecessors = self.shortest_distance(starting_item)
+    #     path = []
+    #     current_vertex = target_item
+    #
+    #     # return from the target vertex through the predecessors
+    #     while current_vertex is not None:
+    #         path.append(current_vertex)
+    #         current_vertex = predecessors.get(current_vertex)
+    #
+    #     path.reverse()
+    #
+    #     if path:
+    #         return path
+    #     else:
+    #         print("No Valid Path Found.")
+    #         return []
 
     def get_similarity_score(self, item1: Any, item2: Any) -> float:
         """Return the similarity score between the two given items in this graph.
@@ -354,3 +356,65 @@ class Graph:
         sorted_recommendations = self.sort_by_closeness(new_recommendations, movie_value, range_of_filter)
 
         return sorted_recommendations[:limit]
+
+    def shortest_path_bfs(self, starting_item: str, target_item: str) -> str | list[Any]:
+        """Find the shortest path between two actors using BFS."""
+        if starting_item not in self._vertices or target_item not in self._vertices:
+            raise ValueError
+
+        queue = deque([(starting_item, [starting_item])])
+        visited = {starting_item}
+
+        while queue:
+            current_actor, path = queue.popleft()
+
+            if current_actor == target_item:
+                return path
+
+            for neighbour in self._vertices[current_actor].neighbours:
+                if neighbour.item not in visited:
+                    visited.add(neighbour.item)
+                    queue.append((neighbour.item, path + [neighbour.item]))
+
+        return []
+
+    def shortest_distance_bfs(self, starting_item) -> dict[Any, float]:
+        """Compute the shortest distance from a given actor to all other actors using BFS."""
+        if starting_item not in self._vertices:
+            raise ValueError
+
+        distances = {actor: float("inf") for actor in self._vertices}
+        distances[starting_item] = 0
+
+        queue = deque([starting_item])
+        visited = {starting_item}
+
+        while queue:
+            current_actor = queue.popleft()
+
+            for neighbour in self._vertices[current_actor].neighbours:
+                if neighbour.item not in visited:
+                    visited.add(neighbour.item)
+                    distances[neighbour.item] = distances[current_actor] + 1
+                    queue.append(neighbour.item)
+
+        return distances
+
+    def average_bacon_number(self, actor: str) -> float:
+        """Given an actor's name, find their average Bacon number with all other actors in the graph."""
+        distances = self.shortest_distance_bfs(actor)
+
+        total_distance = sum(dist for dist in distances.values() if dist != float("inf"))
+        total_reachable = sum(1 for dist in distances.values() if dist != float("inf"))
+
+        return total_distance / total_reachable if total_reachable > 0 else float("inf")
+
+    def compute_average_bacon_numbers(self) -> dict:
+        """Compute the average Bacon number for every actor in the graph."""
+        actors = self.get_all_vertices('actor')
+        average_bacon_numbers = {}
+
+        for actor in actors:
+            average_bacon_numbers[actor] = self.average_bacon_number(actor)
+
+        return average_bacon_numbers
