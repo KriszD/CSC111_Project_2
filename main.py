@@ -22,6 +22,26 @@ def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
     return path, path_with_movies
 
 
+def bacon_path_filtered(graph: Graph, actor1: str, actor2: str, choice: int) -> tuple[list, list]:
+    """Given the name of two actors, find the path between them, return two lists, one with movies and one without"""
+    actors = graph.get_all_vertices('actor')
+    if actor1 not in actors or actor2 not in actors:
+        print("At least one of those actors is not in this graph.")
+        raise ValueError
+
+    path = graph.shortest_path_bfs_filtered(actor1, actor2, choice)
+    path_with_movies = []
+
+    for i in range(len(path) - 1):
+        path_with_movies.append(path[i])  # add actor
+        movies = graph.get_common_movies(path[i], path[i + 1])  # get intersecting movies
+        path_with_movies.append(movies)  # add movie(s)
+
+    path_with_movies.append(path[-1])  # add back the final actor
+
+    return path, path_with_movies
+
+
 def print_bacon_path(graph: Graph, actor1: str, actor2: str) -> None:
     """Cleanly print out the bacon path between two actors."""
     _, path = bacon_path(graph, actor1, actor2)
@@ -68,16 +88,28 @@ def average_bacon_number(graph: Graph, actor: str) -> float:
 def compute_average_bacon_numbers(graph: Graph) -> dict:
     """Compute the average Bacon number for every actor in the graph."""
     actors = graph.get_all_vertices('actor')
-    average_bacon_numbers = {}
+    averages = {}
 
     for actor in actors:
-        average_bacon_numbers[actor] = graph.average_bacon_number(actor)
+        averages[actor] = average_bacon_number(graph, actor)
 
-    return average_bacon_numbers
+    return averages
+
+
+def ranking(data: dict[str, float], limit: int) -> None:
+    """Print out the ranking of <limit> actors based on their average bacon numbers."""
+    i = 0
+    for actor, avg in data.items():
+        if i == limit:
+            return
+        if avg > 0:
+            print(i + 1, ":", actor, "with average bacon number:", avg)
+            i += 1
 
 
 if __name__ == '__main__':
     actor_graph, _ = graph_create.initialize_graphs('Datasets/full_dataset.csv')
+    average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
     # running = True
     # menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
     #         '(3) Bacon Number between two actors', '(4) Exit']
@@ -97,4 +129,3 @@ if __name__ == '__main__':
     #     if choice == 4:
     #         print("Bye!")
     #         running = False
-

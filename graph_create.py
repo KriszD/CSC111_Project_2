@@ -60,3 +60,22 @@ def create_recomended_movie_graph(recomendations: list, movies: dict) -> Graph()
         for j in range(0, i):
             graph.add_edge(recomendations[i], recomendations[j])
     return Graph
+
+
+def create_dict_from_csv(dataset: str) -> dict[str, float]:
+    """Creates a dictionary from a CSV file."""
+    actor_dict = {}
+
+    with open(dataset, mode='r') as file:
+        reader = csv.reader(file)
+
+        next(reader)
+
+        for row in reader:
+            actor = row[0]
+            rating = float(row[1])
+            actor_dict[actor] = rating
+
+    sorted_actor_dict = dict(sorted(actor_dict.items(), key=lambda item: item[1]))
+
+    return sorted_actor_dict
