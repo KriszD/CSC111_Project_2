@@ -1,20 +1,17 @@
 """Graph Classes"""
 from __future__ import annotations
-
 from collections import deque
-from typing import Any, Optional
-from heapq import heapify, heappop, heappush
+from typing import Any
 
 
 class _Vertex:
     """A vertex in a book review graph, used to represent a user or a book.
 
-    Each vertex item is either a user id or book title. Both are represented as strings,
-    even though we've kept the type annotation as Any to be consistent with lecture.
+    Each vertex item is either an actor or movie.
 
     Instance Attributes:
-        - item: The data stored in this vertex, representing a user or book.
-        - kind: The type of this vertex: 'user' or 'book'.
+        - item: The data stored in this vertex, representing an actor or movie.
+        - kind: The type of this vertex: 'actor' or 'movie'.
         - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
@@ -27,7 +24,7 @@ class _Vertex:
     neighbours: set[_Vertex]
     appearences: set[str]
     cast_members: set[str]
-    movie_info: tuple[int, int, float]
+    movie_info: tuple[int, int, float]  # (year, votes, rating)
 
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -44,18 +41,6 @@ class _Vertex:
         self.neighbours = set()
         self.appearences = set()
         self.cast_members = set()
-
-    def similarity_score(self, other: _Vertex) -> float:
-        """Return the similarity score between this vertex and other.
-
-        See Assignment handout for definition of similarity score.
-        """
-        if self.cast_members == 0 or other.cast_members == 0:
-            return 0
-        else:
-            sim_intersection = self.cast_members.intersection(other.cast_members)
-            sim_union = self.cast_members.union(other.cast_members)
-            return len(sim_intersection) / len(sim_union)
 
 
 class Graph:
@@ -163,199 +148,13 @@ class Graph:
         if item1 in self._vertices and item2 in self._vertices:
             v1 = self._vertices[item1]
             v2 = self._vertices[item2]
-            return v1.neighbours.intersection(v2.neighbours)
+            return v1.appearences.intersection(v2.appearences)
         else:
             raise ValueError
 
-    # def shortest_distance(self, item: str) -> tuple[dict[Any, float], dict[Any, Optional[Any]]]:
-    #     """Return a dictionary mapping each vertex to the distance from the target vertex, as a dictionary
-    #     mapping each vertex to their immediate parent vertex that was involved in calculating the shortest path.
-    #
-    #     This is an implementation of Dijkstra's shortest path algorithm.
-    #     >>> g = Graph()
-    #     >>> g.add_vertex('A', 'actor')
-    #     >>> g.add_vertex('B', 'actor')
-    #     >>> g.add_vertex('C', 'actor')
-    #     >>> g.add_vertex('D', 'actor')
-    #     >>> g.add_vertex('E', 'actor')
-    #     >>> g.add_edge("A", "B")
-    #     >>> g.add_edge("A", "C")
-    #     >>> g.add_edge("B", "C")
-    #     >>> g.add_edge("B", "D")
-    #     >>> g.add_edge("C", "D")
-    #     >>> g.add_edge("D", "E")
-    #     >>> distances_of_vertices, predecessors_of_vertices = g.shortest_distance("A")
-    #     >>> distances_of_vertices
-    #     {'A': 0, 'B': 1, 'C': 1, 'D': 2, 'E': 3}
-    #     >>> predecessors_of_vertices
-    #     {'A': -1, 'B': 'A', 'C': 'A', 'D': 'B', 'E': 'D'}
-    #     """
-    #     if item not in self._vertices:
-    #         raise ValueError
-    #
-    #     distances = {vertex: float("inf") for vertex in self._vertices}
-    #     distances[item] = 0
-    #
-    #     predecessors: dict[Any, Optional[str]] = {vertex: None for vertex in self._vertices}
-    #
-    #     pq = [(0, item)]  # initialize a priority queue with the root element
-    #     heapify(pq)
-    #
-    #     visited = set()
-    #
-    #     while pq:
-    #         current_distance, current_vertex = heappop(pq)
-    #         if current_vertex in visited:
-    #             continue
-    #         visited.add(current_vertex)
-    #
-    #         for neighbour in self._vertices[current_vertex].neighbours:
-    #             possible_distance = current_distance + 1  # default weight of 1 since this is an unweighted graph
-    #             if possible_distance < distances[neighbour.item]:
-    #                 distances[neighbour.item] = possible_distance
-    #                 predecessors[neighbour.item] = current_vertex
-    #                 heappush(pq, (possible_distance, neighbour.item))
-    #
-    #     return distances, predecessors
-    #
-    # def shortest_path(self, starting_item: Any, target_item: Any) -> list[Any]:
-    #     """Return a list of the item names of each vertex starting from the source item and ending with
-    #     the target item that is the shortest path between the starting item and the target item.
-    #
-    #     This is an implementation of Dijkstra's shortest path algorithm.
-    #     >>> g = Graph()
-    #     >>> g.add_vertex('A', 'actor')
-    #     >>> g.add_vertex('B', 'actor')
-    #     >>> g.add_vertex('C', 'actor')
-    #     >>> g.add_vertex('D', 'actor')
-    #     >>> g.add_vertex('E', 'actor')
-    #     >>> g.add_vertex('F', 'actor')
-    #     >>> g.add_vertex('G', 'actor')
-    #     >>> g.add_vertex('H', 'actor')
-    #     >>> g.add_vertex('I', 'actor')
-    #     >>> g.add_edge("A", "B")
-    #     >>> g.add_edge("A", "C")
-    #     >>> g.add_edge("B", "C")
-    #     >>> g.add_edge("B", "D")
-    #     >>> g.add_edge("C", "D")
-    #     >>> g.add_edge("D", "E")
-    #     >>> g.add_edge("E", "F")
-    #     >>> g.add_edge("F", "G")
-    #     >>> g.add_edge("G", "H")
-    #     >>> g.add_edge("H", "I")
-    #     >>> g.add_edge("A", "H")
-    #     >>> g.add_edge("C", "G")
-    #     >>> print(g.shortest_path('A', 'I'))
-    #     ['A', 'H', 'I']
-    #     >>> print(g.shortest_path('A', 'F'))
-    #     ['A', 'C', 'G', 'F']
-    #     >>> print(g.shortest_path('B', 'G'))
-    #     ['B', 'C', 'G']
-    #     >>> print(g.shortest_path('C', 'E'))
-    #     ['C', 'D', 'E']
-    #     >>> print(g.shortest_path('F', 'I'))
-    #     ['F', 'G', 'H', 'I']
-    #     """
-    #     _, predecessors = self.shortest_distance(starting_item)
-    #     path = []
-    #     current_vertex = target_item
-    #
-    #     # return from the target vertex through the predecessors
-    #     while current_vertex is not None:
-    #         path.append(current_vertex)
-    #         current_vertex = predecessors.get(current_vertex)
-    #
-    #     path.reverse()
-    #
-    #     if path:
-    #         return path
-    #     else:
-    #         print("No Valid Path Found.")
-    #         return []
-
-    def get_similarity_score(self, item1: Any, item2: Any) -> float:
-        """Return the similarity score between the two given items in this graph.
-
-        Raise a ValueError if item1 or item2 do not appear as vertices in this graph.
-
-        >>> g = Graph()
-        >>> for i in range(0, 6):
-        ...     g.add_vertex(str(i), kind='user')
-        >>> g.add_edge('0', '2')
-        >>> g.add_edge('0', '3')
-        >>> g.add_edge('0', '4')
-        >>> g.add_edge('1', '3')
-        >>> g.add_edge('1', '4')
-        >>> g.add_edge('1', '5')
-        >>> g.get_similarity_score('0', '1')
-        0.5
-        """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1, v2 = self._vertices[item1], self._vertices[item2]
-            return v1.similarity_score(v2)
-        else:
-            raise ValueError
-
-    def recommend_movies(self, movie: str, limit: Optional[int]) -> list[str]:
-        """Return a list of up to <limit> recommended movies based on similarity to the given movie.
-
-        Preconditions:
-            - movie in self._vertices
-            - self._vertices[movie].kind == 'movie'
-            - limit >= 1
-        """
-        if movie not in self._vertices or self._vertices[movie].kind != 'movie':
-            raise ValueError
-
-        recommendations = {}
-        for other_movie in self.get_all_vertices('movie'):
-            if other_movie != movie:
-                sim_score = self.get_similarity_score(movie, other_movie)
-                if sim_score > 0:
-                    recommendations[other_movie] = sim_score
-
-        sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
-        if limit:
-            return sorted_recommendations[:limit]
-        else:
-            return sorted_recommendations
-
-    @staticmethod
-    def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float):
-        """Sorting a dictionary into a list based on absolute difference"""
-        filtered_items = {k: v for k, v in unsorted_dict.items() if abs(v - value) <= threshold}
-        sorted_keys = sorted(filtered_items, key=lambda k: abs(filtered_items[k] - value))
-
-        return sorted_keys
-
-    def recommend_movies_filter(self, movie: str, limit: int, movie_filter: str, range_of_filter: float) -> list[str]:
-        """Return a list of up to <limit> recommended movies based on similarity to the given movie where the movies
-        have gone through a filter that filters movies based on either rating or release date.
-
-        Preconditions:
-            - movie in self._vertices
-            - self._vertices[movie].kind == 'movie'
-            - limit >= 1
-            - filter in {'rating', 'release date'}
-        """
-        if movie not in self._vertices or self._vertices[movie].kind != 'movie':
-            raise ValueError
-
-        if movie_filter not in {'rating', 'release date'}:
-            raise ValueError
-
-        recommendations = self.recommend_movies(movie)
-        movie_info_index = 2 if movie_filter == 'rating' else 0
-        movie_value = self._vertices[movie].movie_info[movie_info_index]
-
-        new_recommendations = {
-            recommendation: self._vertices[recommendation].movie_info[movie_info_index]
-            for recommendation in recommendations
-        }
-
-        sorted_recommendations = self.sort_by_closeness(new_recommendations, movie_value, range_of_filter)
-
-        return sorted_recommendations[:limit]
+#############################
+# BFS (Breadth First Search)
+#############################
 
     def shortest_path_bfs(self, starting_item: str, target_item: str) -> str | list[Any]:
         """Find the shortest path between two actors using BFS."""
@@ -393,28 +192,38 @@ class Graph:
             current_actor = queue.popleft()
 
             for neighbour in self._vertices[current_actor].neighbours:
-                if neighbour.item not in visited:
+                if neighbour.item != starting_item and neighbour.item not in visited:
                     visited.add(neighbour.item)
                     distances[neighbour.item] = distances[current_actor] + 1
                     queue.append(neighbour.item)
 
         return distances
 
-    def average_bacon_number(self, actor: str) -> float:
-        """Given an actor's name, find their average Bacon number with all other actors in the graph."""
-        distances = self.shortest_distance_bfs(actor)
+    def filter_by_key(self, actor1: str, actor2: str, key: str,
+                      upper: int, lower: int, movies: dict) -> tuple[bool, set[str]] | None:
+        """Checks if two actors have a movie connecting them that matches the given filter
 
-        total_distance = sum(dist for dist in distances.values() if dist != float("inf"))
-        total_reachable = sum(1 for dist in distances.values() if dist != float("inf"))
+        Preconditions:
+        - key in {'year', 'rating'}
+        """
+        if actor1 in self._vertices and actor2 in self._vertices:
+            v1 = self._vertices[actor1]
+            v2 = self._vertices[actor2]
 
-        return total_distance / total_reachable if total_reachable > 0 else float("inf")
+            if key == 'year':
+                common = v1.appearences.intersection(v2.appearences)
+                common_filtered = {movie for movie in common if lower <= movies[movie][1][0] <= upper}
+                if common_filtered:
+                    return True, common_filtered
 
-    def compute_average_bacon_numbers(self) -> dict:
-        """Compute the average Bacon number for every actor in the graph."""
-        actors = self.get_all_vertices('actor')
-        average_bacon_numbers = {}
+            if key == 'rating':
+                common = v1.appearences.intersection(v2.appearences)
+                common_filtered = {movie for movie in common if lower <= movies[movie][1][2] <= upper}
+                if common_filtered:
+                    return True, common_filtered
 
-        for actor in actors:
-            average_bacon_numbers[actor] = self.average_bacon_number(actor)
+            else:
+                raise KeyError
 
-        return average_bacon_numbers
+        else:
+            raise ValueError

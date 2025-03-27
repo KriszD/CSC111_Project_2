@@ -47,6 +47,19 @@ def create_actor_graph(movies: dict) -> Graph:
     return graph
 
 
+def create_bacon_actor_graph(movies: dict, path: list) -> Graph:
+    """Creates a graph displaying actors in a given bacon path"""
+    graph = Graph()
+
+    for actor in path:
+        graph.add_vertex(actor, 'actor')
+
+    for i in range(len(path) - 1):
+        graph.add_edge(path[i], path[i + 1])
+
+    return graph
+
+
 def create_recomended_movie_graph(recomendations: list, movies: dict) -> Graph():
     """Creates a graph based on the movie recomendation list
     Each vertex in the graph is a movie, and each edge in the graph is the actors that appear in both movies
@@ -60,3 +73,22 @@ def create_recomended_movie_graph(recomendations: list, movies: dict) -> Graph()
         for j in range(0, i):
             graph.add_edge(recomendations[i], recomendations[j])
     return Graph
+
+
+def create_dict_from_csv(dataset: str) -> dict[str, float]:
+    """Creates a dictionary from a CSV file."""
+    actor_dict = {}
+
+    with open(dataset, mode='r') as file:
+        reader = csv.reader(file)
+
+        next(reader)
+
+        for row in reader:
+            actor = row[0]
+            rating = float(row[1])
+            actor_dict[actor] = rating
+
+    sorted_actor_dict = dict(sorted(actor_dict.items(), key=lambda item: item[1]))
+
+    return sorted_actor_dict
