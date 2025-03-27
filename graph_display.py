@@ -1,4 +1,4 @@
-"""Functions for diplaying the graph"""
+"""Functions for diplaying the graph."""
 
 import networkx as nx
 from plotly.graph_objs import Scatter, Figure
