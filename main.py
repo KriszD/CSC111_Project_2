@@ -107,7 +107,7 @@ def get_similarity_score(item1: Any, item2: Any) -> float:
         return len(sim_intersection) / len(sim_union)
 
 
-def get_recommendations(movies: dict, input_movie: Any, limit: int) -> list[Any]:
+def recommend_movies(movies: dict, input_movie: Any, limit: int) -> list[Any]:
     """Get movie recommendations given an input movie."""
     recommendations = {}
     for movie in movies:
@@ -120,7 +120,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int) -> list[Any]
     return sorted_recommendations[:limit]
 
 
-def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float):
+def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float) -> list[Any]:
     """Sorting a dictionary into a list based on absolute difference"""
     filtered_items = {k: v for k, v in unsorted_dict.items() if abs(v - value) <= threshold}
     sorted_keys = sorted(filtered_items, key=lambda k: abs(filtered_items[k] - value))
@@ -128,7 +128,7 @@ def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float):
     return sorted_keys
 
 
-def recommend_movies_filter(movie: str, limit: int, movie_filter: str, range_of_filter: float) -> list[str]:
+def recommend_movies_filter(movies: dict, input_movie: str, limit: int, movie_filter: str, range_of_filter: float) -> list[str]:
     """Return a list of up to <limit> recommended movies based on similarity to the given movie where the movies
     have gone through a filter that filters movies based on some criteria.
 
@@ -138,22 +138,22 @@ def recommend_movies_filter(movie: str, limit: int, movie_filter: str, range_of_
         - limit >= 1
         - filter in {'rating', 'release date'}
     """
-    if movie not in self._vertices or self._vertices[movie].kind != 'movie':
+    if input_movie not in movies or movies[input_movie].kind != 'movie':
         raise ValueError
 
     if movie_filter not in {'rating', 'release date'}:
         raise ValueError
 
-    recommendations = self.recommend_movies(movie)
+    recommendations = recommend_movies(movies, input_movie, limit)
     movie_info_index = 2 if movie_filter == 'rating' else 0
-    movie_value = self._vertices[movie].movie_info[movie_info_index]
+    movie_value = movies[input_movie].movie_info[movie_info_index]
 
     new_recommendations = {
-        recommendation: self._vertices[recommendation].movie_info[movie_info_index]
+        recommendation: movies[recommendation].movie_info[movie_info_index]
         for recommendation in recommendations
     }
 
-    sorted_recommendations = self.sort_by_closeness(new_recommendations, movie_value, range_of_filter)
+    sorted_recommendations = sort_by_closeness(new_recommendations, movie_value, range_of_filter)
 
     return sorted_recommendations[:limit]
 
@@ -169,7 +169,8 @@ if __name__ == '__main__':
     #     if choice not in [1, 2, 3, 4]:
     #         print("Invalid Choice, try Again.")
     #     if choice == 1:
-    #         pass
+    #         limit = input(int("How many actors? "))
+    #         ranking(actor_graph, limit)
     #     if choice == 2:
     #         actor = str(input("Actor Name: "))
     #         print(actor, "'s Average Bacon Number is:", average_bacon_number(actor_graph, actor))
