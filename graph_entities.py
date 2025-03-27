@@ -7,12 +7,11 @@ from typing import Any
 class _Vertex:
     """A vertex in a book review graph, used to represent a user or a book.
 
-    Each vertex item is either a user id or book title. Both are represented as strings,
-    even though we've kept the type annotation as Any to be consistent with lecture.
+    Each vertex item is either an actor or movie.
 
     Instance Attributes:
-        - item: The data stored in this vertex, representing a user or book.
-        - kind: The type of this vertex: 'user' or 'book'.
+        - item: The data stored in this vertex, representing an actor or movie.
+        - kind: The type of this vertex: 'actor' or 'movie'.
         - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
