@@ -47,6 +47,19 @@ def create_actor_graph(movies: dict) -> Graph:
     return graph
 
 
+def create_bacon_actor_graph(movies: dict, path: list) -> Graph:
+    """Creates a graph displaying actors in a given bacon path"""
+    graph = Graph()
+
+    for actor in path:
+        graph.add_vertex(actor, 'actor')
+
+    for i in range(len(path) - 1):
+        graph.add_edge(path[i], path[i + 1])
+
+    return graph
+
+
 def create_recomended_movie_graph(recomendations: list, movies: dict) -> Graph():
     """Creates a graph based on the movie recomendation list
     Each vertex in the graph is a movie, and each edge in the graph is the actors that appear in both movies
