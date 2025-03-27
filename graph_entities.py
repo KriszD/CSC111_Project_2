@@ -43,18 +43,6 @@ class _Vertex:
         self.appearences = set()
         self.cast_members = set()
 
-    def similarity_score(self, other: _Vertex) -> float:
-        """Return the similarity score between this vertex and other.
-
-        See Assignment handout for definition of similarity score.
-        """
-        if self.cast_members == 0 or other.cast_members == 0:
-            return 0
-        else:
-            sim_intersection = self.cast_members.intersection(other.cast_members)
-            sim_union = self.cast_members.union(other.cast_members)
-            return len(sim_intersection) / len(sim_union)
-
 
 class Graph:
     """A graph used to represent a book review network.
@@ -205,7 +193,7 @@ class Graph:
             current_actor = queue.popleft()
 
             for neighbour in self._vertices[current_actor].neighbours:
-                if neighbour.item not in visited:
+                if neighbour.item != starting_item and neighbour.item not in visited:
                     visited.add(neighbour.item)
                     distances[neighbour.item] = distances[current_actor] + 1
                     queue.append(neighbour.item)
@@ -238,32 +226,5 @@ class Graph:
             else:
                 raise KeyError
 
-        else:
-            raise ValueError
-
-###################
-# Movie Similarity
-###################
-
-    def get_similarity_score(self, item1: Any, item2: Any) -> float:
-        """Return the similarity score between the two given items in this graph.
-
-        Raise a ValueError if item1 or item2 do not appear as vertices in this graph.
-
-        >>> g = Graph()
-        >>> for i in range(0, 6):
-        ...     g.add_vertex(str(i), kind='user')
-        >>> g.add_edge('0', '2')
-        >>> g.add_edge('0', '3')
-        >>> g.add_edge('0', '4')
-        >>> g.add_edge('1', '3')
-        >>> g.add_edge('1', '4')
-        >>> g.add_edge('1', '5')
-        >>> g.get_similarity_score('0', '1')
-        0.5
-        """
-        if item1 in self._vertices and item2 in self._vertices:
-            v1, v2 = self._vertices[item1], self._vertices[item2]
-            return v1.similarity_score(v2)
         else:
             raise ValueError
