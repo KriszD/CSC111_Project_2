@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, Optional
 from heapq import heapify, heappop, heappush
+import networkx as nx
 
 
 class _Vertex:
@@ -23,9 +24,9 @@ class _Vertex:
     item: Any
     kind: str
     neighbours: set[_Vertex]
-    appearences: set[str]
-    cast_members: set[str]
-    movie_info: tuple[int, int, float]
+    appearences: set[str]  # every movie an actor has appeared in
+    cast_members: set[str]  # every actor within a movie
+    movie_info: tuple[int, int, float]  # (Year, Votes, Rating)
 
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -161,7 +162,7 @@ class Graph:
         if item1 in self._vertices and item2 in self._vertices:
             v1 = self._vertices[item1]
             v2 = self._vertices[item2]
-            return v1.neighbours.intersection(v2.neighbours)
+            return v1.appearences.intersection(v2.appearences)
         else:
             raise ValueError
 
@@ -354,3 +355,27 @@ class Graph:
         sorted_recommendations = self.sort_by_closeness(new_recommendations, movie_value, range_of_filter)
 
         return sorted_recommendations[:limit]
+
+    def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
+        """Convert this graph into a networkx Graph.
+
+        max_vertices specifies the maximum number of vertices that can appear in the graph.
+        (This is necessary to limit the visualization output for large graphs.)
+
+        Note that this method is provided for you, and you shouldn't change it.
+        """
+        graph_nx = nx.Graph()
+        for v in self._vertices.values():
+            graph_nx.add_node(v.item, kind=v.kind)
+
+            for u in v.neighbours:
+                if graph_nx.number_of_nodes() < max_vertices:
+                    graph_nx.add_node(u.item, kind=u.kind)
+
+                if u.item in graph_nx.nodes:
+                    graph_nx.add_edge(v.item, u.item)
+
+            if graph_nx.number_of_nodes() >= max_vertices:
+                break
+
+        return graph_nx
