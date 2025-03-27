@@ -231,25 +231,6 @@ class Graph:
 
         return distances
 
-    def average_bacon_number(self, actor: str) -> float:
-        """Given an actor's name, find their average Bacon number with all other actors in the graph."""
-        distances = self.shortest_distance_bfs(actor)
-
-        total_distance = sum(dist for dist in distances.values() if dist != float("inf"))
-        total_reachable = sum(1 for dist in distances.values() if dist != float("inf"))
-
-        return total_distance / total_reachable if total_reachable > 0 else float("inf")
-
-    def compute_average_bacon_numbers(self) -> dict:
-        """Compute the average Bacon number for every actor in the graph."""
-        actors = self.get_all_vertices('actor')
-        average_bacon_numbers = {}
-
-        for actor in actors:
-            average_bacon_numbers[actor] = self.average_bacon_number(actor)
-
-        return average_bacon_numbers
-
     def filter_by_key(self, actor1: str, actor2: str, key: str,
                       upper: int, lower: int, movies: dict) -> tuple[bool, set[str]] | None:
         """Checks if two actors have a movie connecting them that matches the given filer
