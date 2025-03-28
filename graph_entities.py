@@ -243,7 +243,7 @@ class Graph:
 
             if key == 'rating':
                 common = v1.appearences.intersection(v2.appearences)
-                common_filtered = {movie for movie in common if lower <= movies[movie][1][2] <= upper}
+                common_filtered = {movie for movie in common if lower <= float(movies[movie][1][2]) <= upper}
                 if common_filtered:
                     return True, common_filtered
 
@@ -252,3 +252,5 @@ class Graph:
 
         else:
             raise ValueError
+
+        return False, set()

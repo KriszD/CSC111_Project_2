@@ -25,6 +25,9 @@ def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
         movies = graph.get_common_movies(path[i], path[i + 1])  # get intersecting movies
         path_with_movies.append(movies)  # add movie(s)
 
+    if not path:
+        return [], []
+
     path_with_movies.append(path[-1])  # add back the final actor
 
     return path, path_with_movies
@@ -50,6 +53,9 @@ def bacon_path_filtered(graph: Graph, actor1: str, actor2: str, key: str, lower:
         path_with_movies.append(path[i])  # Add actor
         movies_between = graph.get_common_movies(path[i], path[i + 1])  # Get shared movies
         path_with_movies.append(movies_between)  # Add movie(s)
+
+    if not path:
+        return [], []
 
     path_with_movies.append(path[-1])  # Add final actor
 
