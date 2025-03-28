@@ -188,11 +188,11 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
 
 
 if __name__ == '__main__':
-    python_ta.check_all(config={
-        'extra-imports': ['graph_entities', 'graph_create'],  # the names (strs) of imported modules
-        'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
-        'max-line-length': 120
-    })
+    # python_ta.check_all(config={
+    #     'extra-imports': ['graph_entities', 'graph_create'],  # the names (strs) of imported modules
+    #     'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 120
+    # })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
@@ -226,8 +226,8 @@ if __name__ == '__main__':
             key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
 
             if key != 'NO':
-                lower = int(input("Lower bound for filtering: "))
-                upper = int(input("Upper bound for filtering: "))
+                lower = float(input("Lower bound for filtering: "))
+                upper = float(input("Upper bound for filtering: "))
                 print("The Bacon Number between", actor1, "and", actor2, "is:",
                       bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper))
                 print("A path between them is: ")
@@ -245,8 +245,8 @@ if __name__ == '__main__':
             key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
 
             if key != 'NO':
-                lower = int(input("Lower bound for filtering: "))
-                upper = int(input("Upper bound for filtering: "))
+                lower = float(input("Lower bound for filtering: "))
+                upper = float(input("Upper bound for filtering: "))
                 print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper))
 
             else:
