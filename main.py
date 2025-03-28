@@ -209,6 +209,7 @@ if __name__ == '__main__':
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
             '(3) Bacon Number/Path between two actors', '(4) Movie Recommendations for a movie', '(5) Exit']
+
     while running:
         print('======================================================================================')
         print('Your options are: ', menu)
@@ -260,5 +261,5 @@ if __name__ == '__main__':
                 print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit))
 
         if choice == 5:
-            print("Bye!")
+            print("Bye! We hope you enjoyed our project! :)")
             running = False
