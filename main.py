@@ -166,7 +166,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
 
         final_recommendations = {}
         for movie in sorted_recommendations[:limit]:
-            final_recommendations[movie] = movies[movie][1][i]
+            final_recommendations[movie] = key + ' = ' + str(movies[movie][1][i])
 
         return final_recommendations
 

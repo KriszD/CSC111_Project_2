@@ -19,7 +19,9 @@ def initialize_graphs(dataset: str) -> tuple[Graph(), dict]:
 
 
 def load_csv_file(dataset: str) -> dict:
-    """loads data from csv file"""
+    """Loads data from a given csv file, creating a dictionary mapping each movie name to a tuple consisting of
+    (1) a set of all actors in that movie and (2) a tuple containing the movie's
+    release year, number of votes, and rating"""
 
     movies = {}
     with open(dataset, 'r') as file:
@@ -35,8 +37,15 @@ def load_csv_file(dataset: str) -> dict:
 
 def create_actor_graph(movies: dict) -> Graph:
     """Creates the actor graph.
-    Each vertex in the graph is an actor, and each edge is every movie both actors have appeared in."""
-
+    Each vertex in the graph is an actor, and each edge is every movie both actors have appeared in.
+    Also adds the set of movies the actor has appeared in to the _Vertex object
+    >>> movies = {'Movie1': ({'actor1', 'actor2'}, (1990, 200, 8.1)), 'Movie2': ({'actor1', 'actor4'}, (1990, 200, 6))}
+    >>> actor_graph = create_actor_graph(movies)
+    >>> actor_graph.get_neighbours('actor1')
+    {'actor2', 'actor4'}
+    >>> actor_graph.get_appearences('actor1')
+    {'Movie1', 'Movie2'}
+    """
     graph = Graph()
 
     for movie in movies:
@@ -63,18 +72,24 @@ def create_bacon_actor_graph(movies: dict, path: list) -> Graph:
     return graph
 
 
-def create_recomended_movie_graph(recomendations: list, movies: dict) -> Graph():
-    """Creates a graph based on the movie recomendation list
+def create_recommended_movie_graph(recommendations: list | dict, movies: dict) -> Graph():
+    """Creates a graph based on the movie recommendation list or reccomendation dictionary
     Each vertex in the graph is a movie, and each edge in the graph is the actors that appear in both movies
-    Also adds each movie's cast, year, votes, and rating to the _Vertex object"""
+    Also adds each movie's cast, year, votes, and rating to the _Vertex object
+    >>> movies = {'Movie1': ({'actor1', 'actor2'}, (1990, 200, 8.1)), \
+                'Movie2': ({'actor1', 'actor4'}, (1990, 200, 6)), 'Movie3': ({'actor5'}, (1989, 200, 8.4))}
+    """
 
     graph = Graph()
 
-    for i in range(len(recomendations)):
-        graph.add_vertex(recomendations[i], 'movie')
-        graph.add_movie_info(recomendations[i], movies[recomendations[i]][0], movies[recomendations[i]][1])
+    if isinstance(recommendations, dict):
+        recommendations = list(recommendations.keys())
+
+    for i in range(len(recommendations)):
+        graph.add_vertex(recommendations[i], 'movie')
+        graph.add_movie_info(recommendations[i], movies[recommendations[i]][0], movies[recommendations[i]][1])
         for j in range(0, i):
-            graph.add_edge(recomendations[i], recomendations[j])
+            graph.add_edge(recommendations[i], recommendations[j])
     return Graph
 
 
@@ -95,6 +110,17 @@ def create_dict_from_csv(dataset: str) -> dict[str, float]:
     sorted_actor_dict = dict(sorted(actor_dict.items(), key=lambda item: item[1]))
 
     return sorted_actor_dict
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(verbose=True)
+
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'max-line-length': 120,
+    #     'disable': ['R1705', 'E9998', 'E9999']
+    # })
 
 
 if __name__ == '__main__':
