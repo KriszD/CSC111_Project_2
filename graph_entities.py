@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections import deque
 from typing import Any
 
+import python_ta
+
 
 class _Vertex:
     """A vertex in a book review graph, used to represent a user or a book.
@@ -178,7 +180,7 @@ class Graph:
         return []
 
     def shortest_path_bfs_filtered(self, starting_item: str, target_item: str, key: str,
-                                   upper: int, lower: int, movies: dict) -> str | list[Any]:
+                                   upper: float, lower: float, movies: dict) -> str | list[Any]:
         """Find the shortest path between two actors using BFS where actors can only be included in the path
         if they match the filtering requirements."""
         if starting_item not in self._vertices or target_item not in self._vertices:
@@ -208,7 +210,6 @@ class Graph:
             raise ValueError
 
         distances = {actor: float("inf") for actor in self._vertices}
-        distances[starting_item] = 0
 
         queue = deque([starting_item])
         visited = {starting_item}
@@ -225,8 +226,8 @@ class Graph:
         return distances
 
     def filter_by_key(self, actor1: str, actor2: str, key: str,
-                      lower: int, upper: int, movies: dict) -> tuple[bool, set[str]] | None:
-        """Checks if two actors have a movie connecting them that matches the given filter
+                      lower: float, upper: float, movies: dict) -> tuple[bool, set[str]] | None:
+        """Checks if two actors have a movie connecting them that matches the given filter.
 
         Preconditions:
         - key in {'year', 'rating'}
@@ -254,3 +255,11 @@ class Graph:
             raise ValueError
 
         return False, set()
+
+
+if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
