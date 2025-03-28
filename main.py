@@ -7,9 +7,9 @@ from graph_entities import Graph
 import graph_create
 
 
-###################
+#######################################################################################################################
 # Bacon Number
-###################
+#######################################################################################################################
 
 def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
                lower: float = 0, upper: float = 0) -> tuple[list, list]:
@@ -117,9 +117,9 @@ def ranking(data: dict[str, float], limit: int) -> None:
             i += 1
 
 
-###################
+#######################################################################################################################
 # Movie Similarity
-###################
+#######################################################################################################################
 
 def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     """Returns the similarity score between two movies based on dividing the intersection of their cast members
