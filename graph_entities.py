@@ -208,7 +208,6 @@ class Graph:
             raise ValueError
 
         distances = {actor: float("inf") for actor in self._vertices}
-        distances[starting_item] = 0
 
         queue = deque([starting_item])
         visited = {starting_item}
