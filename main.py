@@ -198,6 +198,9 @@ if __name__ == '__main__':
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
     average_bacon_numbers_no_zeroes = {actor: score for actor, score in average_bacon_numbers.items() if score != 0}
 
+    # the meaningful numbers based on OUR dataset.
+    average_bacon_numbers_meaningful = {actor: score for actor, score in average_bacon_numbers.items() if score > 1.5}
+
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
             '(3) Bacon Number/Path between two actors', '(4) Movie Recommendations for a movie', '(5) Exit']
