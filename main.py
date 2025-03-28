@@ -1,6 +1,8 @@
 """Running the program"""
 from typing import Any
 
+import python_ta
+
 from graph_entities import Graph
 import graph_create
 
@@ -9,8 +11,16 @@ import graph_create
 # Bacon Number
 ###################
 
-def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
-    """Given the name of two actors, find the path between them, return two lists, one with movies and one without"""
+def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+               lower: float = 0, upper: float = 0) -> tuple[list, list]:
+    """Given the names of two actors, find the shortest path between in a graph them.
+
+    If not given parameters for filtering, do it using the default method. Otherwise, use the filtering parameters to
+    properly filter the shortest path based on those filters.
+
+    Preconditions:
+        - key in {'rating', 'release date'} or key == ''
+    """
     actors = graph.get_all_vertices('actor')
 
     if actor1 not in actors or actor2 not in actors:
@@ -20,34 +30,9 @@ def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
     path = graph.shortest_path_bfs(actor1, actor2)
     path_with_movies = []
 
-    for i in range(len(path) - 1):
-        path_with_movies.append(path[i])  # add actor
-        movies = graph.get_common_movies(path[i], path[i + 1])  # get intersecting movies
-        path_with_movies.append(movies)  # add movie(s)
-
-    if not path:
-        return [], []
-
-    path_with_movies.append(path[-1])  # add back the final actor
-
-    return path, path_with_movies
-
-
-def bacon_path_filtered(graph: Graph, actor1: str, actor2: str, key: str, lower: int,
-                        upper: int, movies: dict) -> tuple[list, list]:
-    """Given the names of two actors, find the shortest path between them using filtering.
-
-    Preconditions:
-        - key in {'year', 'rating'}
-    """
-    actors = graph.get_all_vertices('actor')
-
-    if actor1 not in actors or actor2 not in actors:
-        print("At least one of those actors is not in this graph.")
-        raise ValueError
-
-    path = graph.shortest_path_bfs_filtered(actor1, actor2, key, lower, upper, movies)
-    path_with_movies = []
+    if key in {'rating', 'release date'}:
+        path = graph.shortest_path_bfs_filtered(actor1, actor2, key, lower, upper, movies)
+        path_with_movies = []
 
     for i in range(len(path) - 1):
         path_with_movies.append(path[i])  # Add actor
@@ -62,9 +47,13 @@ def bacon_path_filtered(graph: Graph, actor1: str, actor2: str, key: str, lower:
     return path, path_with_movies
 
 
-def print_bacon_path(graph: Graph, actor1: str, actor2: str) -> None:
-    """Cleanly print out the bacon path between two actors."""
-    _, path = bacon_path(graph, actor1, actor2)
+def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+                     lower: float = 0, upper: float = 0) -> None:
+    """Cleanly print out the bacon path between two actors.
+
+    Note: the filtering parameters are passed in case the function bacon_path needs them, since this function
+    relies on bacon_path."""
+    _, path = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
 
     formatted_path = []
 
@@ -77,8 +66,9 @@ def print_bacon_path(graph: Graph, actor1: str, actor2: str) -> None:
     print(" -->> ".join(formatted_path))
 
 
-def bacon_number(graph: Graph, actor1: str, actor2: str) -> int:
-    """Given the name of two actors, calculate their bacon number (the shortest path between them)
+def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+                 lower: float = 0, upper: float = 0) -> int:
+    """Given the name of two actors, calculate their bacon number (the shortest path between them).
 
     >>> g = Graph()
     >>> g.add_vertex('Kevin Bacon', 'actor')
@@ -91,12 +81,13 @@ def bacon_number(graph: Graph, actor1: str, actor2: str) -> int:
     >>> bacon_number(g, 'Kevin Bacon', 'Dwayne Johnson')
     2
     """
-    path, _ = bacon_path(graph, actor1, actor2)
+    path, _ = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
     return len(path) - 1
 
 
 def average_bacon_number(graph: Graph, actor: str) -> float:
-    """Given an actor's name, find their average Bacon number with all other actors in the graph."""
+    """Given an actor's name, find their average Bacon number by finding their shortest path (if possible)
+    to all other actors, and taking the average."""
     distances = graph.shortest_distance_bfs(actor)
 
     total_distance = sum(dist for dist in distances.values() if dist != float("inf"))
@@ -106,7 +97,7 @@ def average_bacon_number(graph: Graph, actor: str) -> float:
 
 
 def compute_average_bacon_numbers(graph: Graph) -> dict:
-    """Compute the average Bacon number for every actor in the graph."""
+    """Compute the average Bacon number for every actor in the graph and store it in a dictionary."""
     actors = graph.get_all_vertices('actor')
     averages = {}
 
@@ -132,7 +123,8 @@ def ranking(data: dict[str, float], limit: int) -> None:
 ###################
 
 def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
-    """Returns the similarity score between two movies in a dict"""
+    """Returns the similarity score between two movies based on dividing the intersection of their cast members
+    by the union of their cast members."""
 
     if movies[movie1][0] == set() or movies[movie2][0] == set():
         return 0
@@ -142,8 +134,8 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     return len(sim_intersection) / len(sim_union)
 
 
-def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key: str = '',
-                                 lower: float = 0, upper: float = 0) -> dict[Any, Any] | list[Any]:
+def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '',
+                        lower: float = 0, upper: float = 0) -> dict[Any, Any] | list[Any]:
     """Get movie recommendations given an input movie.
 
     Preconditions:
@@ -185,7 +177,7 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
     """Returns whether the given movie's info is within the given bound.
 
     Preconditions:
-    - key in {'rating', 'release date'}
+        - key in {'rating', 'release date'} or key == ''
     """
 
     if key == 'rating':
@@ -197,33 +189,69 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
 
 
 if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
+
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
-    f = get_recommendations_filtered(movie_dict, 'Separate Tables', 25, 'release date', 1960, 2000)
 
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
             '(3) Bacon Number/Path between two actors', '(4) Movie Recommendations for a movie', '(5) Exit']
+
     while running:
         print('======================================================================================')
         print('Your options are: ', menu)
-        choice = int(input("What is your choice?"))
+        choice = int(input("Your choice: "))
+
         if choice not in [1, 2, 3, 4, 5]:
             print("Invalid Choice, try Again.")
+
         if choice == 1:
-            limit = int(input("How many actors? There are a total of", len(average_bacon_numbers)))
+            limit = int(input("Number of actors: "))
             ranking(average_bacon_numbers, limit)
+
         if choice == 2:
             actor = str(input("Actor Name: "))
             print(actor, "'s Average Bacon Number is:", average_bacon_number(actor_graph, actor))
             print("The actor is number", list(average_bacon_numbers.keys()).index(actor), "out of",
                   len(average_bacon_numbers), "in the overall rankings.")
+
         if choice == 3:
             actor1 = str(input("Actor 1 Name: "))
             actor2 = str(input("Actor 2 Name: "))
-            print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1, actor2))
-            print("A path between them is: ")
-            print_bacon_path(actor_graph, actor1, actor2)
+            key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
+
+            if key != 'NO':
+                lower = int(input("Lower bound for filtering: "))
+                upper = int(input("Upper bound for filtering: "))
+                print("The Bacon Number between", actor1, "and", actor2, "is:",
+                      bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper))
+                print("A path between them is: ")
+                print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+
+            else:
+                print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1,
+                                                                                             actor2, movie_dict))
+                print("A path between them is: ")
+                print_bacon_path(actor_graph, actor1, actor2, movie_dict)
+
         if choice == 4:
-            print("Bye!")
+            movie = str(input("Movie Name: "))
+            limit = int(input("Number of Recommendations: "))
+            key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
+
+            if key != 'NO':
+                lower = int(input("Lower bound for filtering: "))
+                upper = int(input("Upper bound for filtering: "))
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper))
+
+            else:
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit))
+
+        if choice == 5:
+            print("Bye! We hope you enjoyed our project! :)")
             running = False
