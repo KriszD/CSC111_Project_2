@@ -307,7 +307,8 @@ class Graph:
                     distances[neighbour.item] = distances[current_actor] + 1
                     queue.append(neighbour.item)
 
-        return distances
+        # Remove the starting actor
+        return {actor: dist for actor, dist in distances.items() if actor != starting_item}
 
     def filter_by_key(self, actor1: str, actor2: str, key: str,
                       lower: float, upper: float, movies: dict) -> tuple[bool, set[str]] | None:
