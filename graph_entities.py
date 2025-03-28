@@ -178,7 +178,7 @@ class Graph:
         return []
 
     def shortest_path_bfs_filtered(self, starting_item: str, target_item: str, key: str,
-                                   upper: int, lower: int, movies: dict) -> str | list[Any]:
+                                   upper: float, lower: float, movies: dict) -> str | list[Any]:
         """Find the shortest path between two actors using BFS where actors can only be included in the path
         if they match the filtering requirements."""
         if starting_item not in self._vertices or target_item not in self._vertices:
@@ -225,7 +225,7 @@ class Graph:
         return distances
 
     def filter_by_key(self, actor1: str, actor2: str, key: str,
-                      lower: int, upper: int, movies: dict) -> tuple[bool, set[str]] | None:
+                      lower: float, upper: float, movies: dict) -> tuple[bool, set[str]] | None:
         """Checks if two actors have a movie connecting them that matches the given filter
 
         Preconditions:
