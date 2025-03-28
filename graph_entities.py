@@ -225,7 +225,7 @@ class Graph:
         return distances
 
     def filter_by_key(self, actor1: str, actor2: str, key: str,
-                      upper: int, lower: int, movies: dict) -> tuple[bool, set[str]] | None:
+                      lower: int, upper: int, movies: dict) -> tuple[bool, set[str]] | None:
         """Checks if two actors have a movie connecting them that matches the given filter
 
         Preconditions:
@@ -237,7 +237,7 @@ class Graph:
 
             if key == 'year':
                 common = v1.appearences.intersection(v2.appearences)
-                common_filtered = {movie for movie in common if lower <= movies[movie][1][0] <= upper}
+                common_filtered = {movie for movie in common if lower <= float(movies[movie][1][0]) <= upper}
                 if common_filtered:
                     return True, common_filtered
 
