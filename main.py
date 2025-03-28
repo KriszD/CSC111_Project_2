@@ -12,9 +12,11 @@ import graph_create
 def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
     """Given the name of two actors, find the path between them, return two lists, one with movies and one without"""
     actors = graph.get_all_vertices('actor')
+
     if actor1 not in actors or actor2 not in actors:
         print("At least one of those actors is not in this graph.")
         raise ValueError
+
     path = graph.shortest_path_bfs(actor1, actor2)
     path_with_movies = []
 
@@ -24,6 +26,32 @@ def bacon_path(graph: Graph, actor1: str, actor2: str) -> tuple[list, list]:
         path_with_movies.append(movies)  # add movie(s)
 
     path_with_movies.append(path[-1])  # add back the final actor
+
+    return path, path_with_movies
+
+
+def bacon_path_filtered(graph: Graph, actor1: str, actor2: str, key: str, lower: int,
+                        upper: int, movies: dict) -> tuple[list, list]:
+    """Given the names of two actors, find the shortest path between them using filtering.
+
+    Preconditions:
+        - key in {'year', 'rating'}
+    """
+    actors = graph.get_all_vertices('actor')
+
+    if actor1 not in actors or actor2 not in actors:
+        print("At least one of those actors is not in this graph.")
+        raise ValueError
+
+    path = graph.shortest_path_bfs_filtered(actor1, actor2, key, lower, upper, movies)
+    path_with_movies = []
+
+    for i in range(len(path) - 1):
+        path_with_movies.append(path[i])  # Add actor
+        movies_between = graph.get_common_movies(path[i], path[i + 1])  # Get shared movies
+        path_with_movies.append(movies_between)  # Add movie(s)
+
+    path_with_movies.append(path[-1])  # Add final actor
 
     return path, path_with_movies
 
@@ -217,7 +245,8 @@ if __name__ == '__main__':
     f = get_recommendations_filtered(movie_dict, 'Separate Tables', 10)
     # running = True
     # menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
-    #         '(3) Bacon Number/Path between two actors', '(4) Exit']
+    #         '(3) Bacon Number/Path between two actors', '(4) Bacon Number/Path between two actors (filtered)',
+    #         '(5) Exit']
     # while running:
     #     print('Your options are: ', menu)
     #     choice = int(input("What is your choice?"))
