@@ -182,7 +182,7 @@ def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key
 
 
 def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, upper: float) -> bool:
-    """Returns whether the given movie's info is within the given bound
+    """Returns whether the given movie's info is within the given bound.
 
     Preconditions:
     - key in {'rating', 'release date'}
