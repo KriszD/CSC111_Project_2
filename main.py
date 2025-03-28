@@ -170,7 +170,7 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
 
 
 def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key: str = '',
-                                 upper: int = 0, lower: int = 0) -> list[Any]:
+                                 lower: int = 0, upper: int = 0) -> list[Any]:
     """Get movie recommendations given an input movie.
 
     Preconditions:
@@ -187,8 +187,8 @@ def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key
 
     if key in {'rating', 'release date'}:
         for movie in movies:
-            if movie != input_movie and similarity_filter(movies, movie, key, upper, lower):
-                sim_score = get_similarity_score_dict(input_movie, movie)
+            if movie != input_movie and similarity_filter(movies, movie, key, lower, upper):
+                sim_score = get_similarity_score_dict(movies, input_movie, movie)
                 if sim_score > 0:
                     recommendations[movie] = sim_score
 
@@ -196,7 +196,7 @@ def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key
     return sorted_recommendations[:limit]
 
 
-def similarity_filter(movies: dict, input_movie: str, key: str, upper: int, lower: int) -> bool:
+def similarity_filter(movies: dict, input_movie: str, key: str, lower: int, upper: int) -> bool:
     """Returns whether the given movie's info is within the given bound
 
     Preconditions:
@@ -204,9 +204,9 @@ def similarity_filter(movies: dict, input_movie: str, key: str, upper: int, lowe
     """
 
     if key == 'rating':
-        return lower <= movies[input_movie][1][2] <= upper
+        return lower <= float(movies[input_movie][1][2]) <= upper
     elif key == 'release date':
-        return lower <= movies[input_movie][1][0] <= upper
+        return lower <= float(movies[input_movie][1][0]) <= upper
     else:
         raise KeyError
 
@@ -214,7 +214,7 @@ def similarity_filter(movies: dict, input_movie: str, key: str, upper: int, lowe
 if __name__ == '__main__':
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
-    f = get_recommendations_filtered(movie_dict, 'Separate Tables', 10)
+    f = get_recommendations_filtered(movie_dict, 'Separate Tables', 10, 'release date', 1960, 2000)
     # running = True
     # menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
     #         '(3) Bacon Number/Path between two actors', '(4) Exit']
