@@ -143,7 +143,7 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
 
 
 def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key: str = '',
-                                 lower: float = 0, upper: float = 0) -> list[Any]:
+                                 lower: float = 0, upper: float = 0) -> dict[Any, Any] | list[Any]:
     """Get movie recommendations given an input movie.
 
     Preconditions:
@@ -158,6 +158,9 @@ def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key
                 if sim_score > 0:
                     recommendations[movie] = sim_score
 
+        sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
+        return sorted_recommendations[:limit]
+
     if key in {'rating', 'release date'}:
         for movie in movies:
             if movie != input_movie and similarity_filter(movies, movie, key, lower, upper):
@@ -165,8 +168,17 @@ def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key
                 if sim_score > 0:
                     recommendations[movie] = sim_score
 
-    sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
-    return sorted_recommendations[:limit]
+        sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
+
+        i = 2 if key == 'rating' else 0
+
+        final_recommendations = {}
+        for movie in sorted_recommendations[:limit]:
+            final_recommendations[movie] = movies[movie][1][i]
+
+        return final_recommendations
+
+    raise ValueError
 
 
 def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, upper: float) -> bool:
