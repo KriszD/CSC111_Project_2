@@ -24,8 +24,7 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = 
     actors = graph.get_all_vertices('actor')
 
     if actor1 not in actors or actor2 not in actors:
-        print("At least one of those actors is not in this graph.")
-        raise ValueError
+        raise ValueError("At least one of those actors is not in this graph.")
 
     path = graph.shortest_path_bfs(actor1, actor2)
     path_with_movies = []
@@ -190,14 +189,14 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
 
 if __name__ == '__main__':
     python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'extra-imports': ['graph_entities', 'graph_create'],  # the names (strs) of imported modules
+        'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
-    average_bacon_numbers_no_zeroes = {key: value for key, value in average_bacon_numbers.items() if value != 0}
+    average_bacon_numbers_no_zeroes = {actor: score for actor, score in average_bacon_numbers.items() if score != 0}
 
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
