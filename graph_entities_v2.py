@@ -260,8 +260,8 @@ class Graph:
         #                     if is_valid:
         #                         visited.add(neighbour.item)
         #                         queue.append((neighbour.item, path + [neighbour.item]))
-        #                         output = movie
-        # return output
+        #                         output = visited
+        # return visited
 
     def shortest_distance_bfs(self, starting_item) -> dict[Any, float]:
         """Compute the shortest distance from a given actor to all other actors using BFS.
