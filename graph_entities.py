@@ -158,9 +158,9 @@ class Graph:
         """Returns a set of movies an actor has appeared in"""
         return self._vertices[actor].appearences
 
-#############################
+#######################################################################################################################
 # BFS (Breadth First Search)
-#############################
+#######################################################################################################################
 
     def shortest_path_bfs(self, starting_item: str, target_item: str) -> str | list[Any]:
         """Find the shortest path between two actors using BFS."""

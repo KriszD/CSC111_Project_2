@@ -2,6 +2,7 @@
 
 import networkx as nx
 import python_ta
+from graph_entities import Graph
 from plotly.graph_objs import Scatter, Figure
 
 COLOUR_SCHEME = [
@@ -17,7 +18,7 @@ ACTOR_COLOR = 'rgb(105, 89, 205)'
 MOVIE_COLOR = 'rgb(89, 205, 105)'
 
 
-def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str] = None,
+def visualize_actor_path(graph: Graph, path: list[str], fallback_actors: tuple[str, str] = None,
                          layout: str = 'spring_layout', output_file: str = '') -> None:
     """
     Visualizes a path of actors (and the movies connecting them) using Plotly.
@@ -41,11 +42,11 @@ def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str
             return
 
     # Create a new NetworkX graph to represent the actor path.
-    G = nx.Graph()
+    g = nx.Graph()
 
     # Add nodes for each actor in the path.
     for actor in path:
-        G.add_node(actor, kind='actor')
+        g.add_node(actor, kind='actor')
 
     # Only add edges if a path was actually found (i.e. if fallback actors are not used)
     if len(path) > 1 and graph.get_common_movies(path[0], path[1]):
@@ -54,15 +55,15 @@ def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str
             actor2 = path[i + 1]
             common_movies = graph.get_common_movies(actor1, actor2)
             movies_str = '<br>'.join(sorted(common_movies)) if common_movies else ''
-            G.add_edge(actor1, actor2, movies=movies_str)
+            g.add_edge(actor1, actor2, movies=movies_str)
 
     # Compute node positions using the selected layout algorithm.
-    pos = getattr(nx, layout)(G)
+    pos = getattr(nx, layout)(g)
 
     # Extract node coordinates and labels.
-    x_values = [pos[node][0] for node in G.nodes()]
-    y_values = [pos[node][1] for node in G.nodes()]
-    labels = list(G.nodes())
+    x_values = [pos[node][0] for node in g.nodes()]
+    y_values = [pos[node][1] for node in g.nodes()]
+    labels = list(g.nodes())
 
     # Calculate buffer margins for the canvas border
     min_x, max_x = min(x_values), max(x_values)
@@ -92,7 +93,7 @@ def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str
     # Prepare the edge coordinates.
     x_edges = []
     y_edges = []
-    for edge in G.edges():
+    for edge in g.edges():
         x_edges += [pos[edge[0]][0], pos[edge[1]][0], None]
         y_edges += [pos[edge[0]][1], pos[edge[1]][1], None]
 
@@ -129,7 +130,7 @@ def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str
     edge_label_x = []
     edge_label_y = []
     edge_labels = []
-    for edge in G.edges(data=True):
+    for edge in g.edges(data=True):
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
         edge_label_x.append((x0 + x1) / 2)
@@ -169,7 +170,7 @@ def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str
 
 if __name__ == '__main__':
     python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'extra-imports': ['networkx', 'plotly.graph_objs', 'graph_entities'],  # the names (strs) of imported modules
+        'allowed-io': ['visualize_actor_path'],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
