@@ -66,8 +66,8 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = 
     return path, path_with_movies
 
 
-def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str,
-                     lower: float, upper: float) -> None:
+def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+                        lower: float = 0, upper: float = 0) -> None:
     """Cleanly print out the bacon path between two actors."""
     _, path = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
 
@@ -82,8 +82,8 @@ def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: 
     print(" -->> ".join(formatted_path))
 
 
-def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str,
-                     lower: float, upper: float) -> int:
+def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+                        lower: float = 0, upper: float = 0) -> int:
     """Given the name of two actors, calculate their bacon number (the shortest path between them)
 
     >>> g = Graph()
@@ -236,13 +236,15 @@ if __name__ == '__main__':
                 lower = int(input("Lower bound for filtering: "))
                 upper = int(input("Upper bound for filtering: "))
                 print("The Bacon Number between", actor1, "and", actor2, "is:",
-                      bacon_number(actor_graph, actor1, actor2, key, lower, upper))
+                      bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper))
                 print("A path between them is: ")
-                print_bacon_path(actor_graph, actor1, actor2, key, lower, upper)
+                print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
 
-            print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1, actor2))
-            print("A path between them is: ")
-            print_bacon_path(actor_graph, actor1, actor2)
+            else:
+                print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1,
+                                                                                             actor2, movie_dict))
+                print("A path between them is: ")
+                print_bacon_path(actor_graph, actor1, actor2, movie_dict)
 
         if choice == 4:
             movie = str(input("Movie Name: "))
@@ -254,7 +256,8 @@ if __name__ == '__main__':
                 upper = int(input("Upper bound for filtering: "))
                 print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper))
 
-            print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit))
+            else:
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit))
 
         if choice == 5:
             print("Bye!")
