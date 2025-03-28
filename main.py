@@ -125,67 +125,6 @@ def ranking(data: dict[str, float], limit: int) -> None:
 # Movie Similarity
 ###################
 
-def get_similarity_score(item1: Any, item2: Any) -> float:
-    """Return the similarity score between the two movies."""
-    if item1.cast_members == 0 or item2.cast_members == 0:
-        return 0
-    else:
-        sim_intersection = item1.cast_members.intersection(item2.cast_members)
-        sim_union = item1.cast_members.union(item2.cast_members)
-        return len(sim_intersection) / len(sim_union)
-
-
-def recommend_movies(movies: dict, input_movie: Any, limit: int) -> list[Any]:
-    """Get movie recommendations given an input movie."""
-    recommendations = {}
-    for movie in movies:
-        if movie != input_movie:
-            sim_score = get_similarity_score(input_movie, movie)
-            if sim_score > 0:
-                recommendations[movie] = sim_score
-
-    sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
-    return sorted_recommendations[:limit]
-
-
-def sort_by_closeness(unsorted_dict: dict, value: float, threshold: float) -> list[Any]:
-    """Sorting a dictionary into a list based on absolute difference."""
-    filtered_items = {k: v for k, v in unsorted_dict.items() if abs(v - value) <= threshold}
-    sorted_keys = sorted(filtered_items, key=lambda k: abs(filtered_items[k] - value))
-
-    return sorted_keys
-
-
-def recommend_movies_filter(movies: dict, input_movie: str, limit: int, movie_filter: str, range_of_filter: float) -> list[str]:
-    """Return a list of up to <limit> recommended movies based on similarity to the given movie where the movies
-    have gone through a filter that filters movies based on some criteria.
-
-    Preconditions:
-        - movie in self._vertices
-        - self._vertices[movie].kind == 'movie'
-        - limit >= 1
-        - filter in {'rating', 'release date'}
-    """
-    if input_movie not in movies or movies[input_movie].kind != 'movie':
-        raise ValueError
-
-    if movie_filter not in {'rating', 'release date'}:
-        raise ValueError
-
-    recommendations = recommend_movies(movies, input_movie, limit)
-    movie_info_index = 2 if movie_filter == 'rating' else 0
-    movie_value = movies[input_movie].movie_info[movie_info_index]
-
-    new_recommendations = {
-        recommendation: movies[recommendation].movie_info[movie_info_index]
-        for recommendation in recommendations
-    }
-
-    sorted_recommendations = sort_by_closeness(new_recommendations, movie_value, range_of_filter)
-
-    return sorted_recommendations[:limit]
-
-
 def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     """Returns the similarity score between two movies in a dict"""
 
