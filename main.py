@@ -212,7 +212,7 @@ def similarity_filter(movies: dict, input_movie: str, key: str, upper: int, lowe
 
 if __name__ == '__main__':
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
-    average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
+    avg_bacon_nums = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
             '(3) Bacon Number/Path between two actors', '(4) Exit']
@@ -223,7 +223,7 @@ if __name__ == '__main__':
             print("Invalid Choice, try Again.")
         if choice == 1:
             limit = int(input("How many actors? "))
-            ranking(average_bacon_numbers, limit)
+            ranking(avg_bacon_nums, limit)
         if choice == 2:
             actor = str(input("Actor Name: "))
             print(actor, "'s Average Bacon Number is:", average_bacon_number(actor_graph, actor))
