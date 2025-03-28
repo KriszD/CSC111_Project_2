@@ -113,7 +113,7 @@ def ranking(data: dict[str, float], limit: int) -> None:
     for actor, avg in data.items():
         if i == limit:
             return
-        if avg > 1:
+        if avg > 0:
             print(i + 1, ":", actor, "with average bacon number:", avg)
             i += 1
 
@@ -197,6 +197,7 @@ if __name__ == '__main__':
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
+    average_bacon_numbers_no_zeroes = {key: value for key, value in average_bacon_numbers.items() if value != 0}
 
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
@@ -216,9 +217,9 @@ if __name__ == '__main__':
 
         if choice == 2:
             actor = str(input("Actor Name: "))
-            print(actor, "'s Average Bacon Number is:", average_bacon_number(actor_graph, actor))
-            print("The actor is number", list(average_bacon_numbers.keys()).index(actor), "out of",
-                  len(average_bacon_numbers), "in the overall rankings.")
+            print("The Average Bacon Number for", actor, "is:", average_bacon_number(actor_graph, actor))
+            print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor) + 1, "out of",
+                  len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
 
         if choice == 3:
             actor1 = str(input("Actor 1 Name: "))
