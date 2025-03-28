@@ -105,7 +105,8 @@ def create_dict_from_csv(dataset: str) -> dict[str, float]:
         for row in reader:
             actor = row[0]
             rating = float(row[1])
-            actor_dict[actor] = rating
+            if rating != 'Infinity':
+                actor_dict[actor] = rating
 
     sorted_actor_dict = dict(sorted(actor_dict.items(), key=lambda item: item[1]))
 
