@@ -1,6 +1,7 @@
 """Functions for diplaying the graph."""
 
 import networkx as nx
+import python_ta
 from plotly.graph_objs import Scatter, Figure
 
 COLOUR_SCHEME = [
@@ -120,3 +121,11 @@ def visualize_graph(graph, layout: str = 'spring_layout', max_vertices: int = 50
         fig.show()
     else:
         fig.write_image(output_file)
+
+
+if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

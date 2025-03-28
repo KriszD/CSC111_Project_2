@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections import deque
 from typing import Any
 
+import python_ta
+
 
 class _Vertex:
     """A vertex in a book review graph, used to represent a user or a book.
@@ -253,3 +255,11 @@ class Graph:
             raise ValueError
 
         return False, set()
+
+
+if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

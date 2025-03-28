@@ -1,6 +1,8 @@
 """Running the program"""
 from typing import Any
 
+import python_ta
+
 from graph_entities import Graph
 import graph_create
 
@@ -187,6 +189,12 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
 
 
 if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
+
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
 
