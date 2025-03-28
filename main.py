@@ -158,8 +158,60 @@ def recommend_movies_filter(movies: dict, input_movie: str, limit: int, movie_fi
     return sorted_recommendations[:limit]
 
 
+def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
+    """Returns the similarity score between two movies in a dict"""
+
+    if movies[movie1][0] == set() or movies[movie2][0] == set():
+        return 0
+
+    sim_intersection = movies[movie1][0].intersection(movies[movie2][0])
+    sim_union = movies[movie1][0].intersection(movies[movie2][0])
+    return len(sim_intersection) / len(sim_union)
+
+
+def get_recommendations_filtered(movies: dict, input_movie: Any, limit: int, key: str == '', upper: int, lower: int) -> list[Any]:
+    """Get movie recommendations given an input movie.
+
+    Preconditions:
+    - key in {'rating', 'release date'} or key == ''
+    """
+    recommendations = {}
+
+    if key == '':
+        for movie in movies:
+            if movie != input_movie:
+                sim_score = get_similarity_score(input_movie, movie)
+                if sim_score > 0:
+                    recommendations[movie] = sim_score
+
+    if key in {'rating', 'release date'}:
+        for movie in movies:
+            if movie != input_movie and similarity_filter(movies, movie, key, upper, lower):
+                sim_score = get_similarity_score(input_movie, movie)
+                if sim_score > 0:
+                    recommendations[movie] = sim_score
+
+    sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
+    return sorted_recommendations[:limit]
+
+
+def similarity_filter(movies: dict, input_movie: str, key: str, upper: int, lower: int) -> bool:
+    """Returns whether the given movie's info is within the given bound
+
+    Preconditions:
+    - key in {'rating', 'release date'}
+    """
+
+    if key == 'rating':
+        return lower <= movies[input_movie][1][2] <= upper
+    elif key == 'release date':
+        return lower <= movies[input_movie][1][0] <= upper
+    else:
+        raise KeyError
+
+
 if __name__ == '__main__':
-    actor_graph, _ = graph_create.initialize_graphs('Datasets/full_dataset.csv')
+    actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
     running = True
     menu = ['(1) Bacon Number Ranking', '(2) Average Bacon Number of an actor',
