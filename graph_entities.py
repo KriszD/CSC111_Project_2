@@ -154,6 +154,10 @@ class Graph:
         else:
             raise ValueError
 
+    def get_appearences(self, actor: str) -> set:
+        """Returns a set of movies an actor has appeared in"""
+        return self._vertices[actor].appearences
+
 #############################
 # BFS (Breadth First Search)
 #############################
@@ -204,7 +208,7 @@ class Graph:
 
         return []
 
-    def shortest_distance_bfs(self, starting_item) -> dict[Any, float]:
+    def shortest_distance_bfs(self, starting_item: str) -> dict[Any, float]:
         """Compute the shortest distance from a given actor to all other actors using BFS."""
         if starting_item not in self._vertices:
             raise ValueError
