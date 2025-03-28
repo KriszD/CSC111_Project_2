@@ -1,6 +1,7 @@
 """Functions for diplaying the graph."""
 
 import networkx as nx
+import python_ta
 from plotly.graph_objs import Scatter, Figure
 
 COLOUR_SCHEME = [
@@ -164,3 +165,11 @@ def visualize_actor_path(graph, path: list[str], fallback_actors: tuple[str, str
         fig.write_image(output_file)
     else:
         fig.show()
+
+
+if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
