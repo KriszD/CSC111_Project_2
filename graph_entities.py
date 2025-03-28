@@ -177,6 +177,31 @@ class Graph:
 
         return []
 
+    def shortest_path_bfs_filtered(self, starting_item: str, target_item: str, key: str,
+                                   upper: int, lower: int, movies: dict) -> str | list[Any]:
+        """Find the shortest path between two actors using BFS where actors can only be included in the path
+        if they match the filtering requirements."""
+        if starting_item not in self._vertices or target_item not in self._vertices:
+            raise ValueError
+
+        queue = deque([(starting_item, [starting_item])])
+        visited = {starting_item}
+
+        while queue:
+            current_actor, path = queue.popleft()
+
+            if current_actor == target_item:
+                return path
+
+            for neighbour in self._vertices[current_actor].neighbours:
+                if neighbour.item not in visited:
+                    is_valid, _ = self.filter_by_key(current_actor, neighbour.item, key, upper, lower, movies)
+                    if is_valid:
+                        visited.add(neighbour.item)
+                        queue.append((neighbour.item, path + [neighbour.item]))
+
+        return []
+
     def shortest_distance_bfs(self, starting_item) -> dict[Any, float]:
         """Compute the shortest distance from a given actor to all other actors using BFS."""
         if starting_item not in self._vertices:
