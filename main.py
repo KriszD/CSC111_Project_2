@@ -11,7 +11,7 @@ import graph_create
 # Bacon Number
 #######################################################################################################################
 
-def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key: str = '',
                lower: float = 0, upper: float = 0) -> tuple[list, list]:
     """Given the names of two actors, find the shortest path between in a graph them.
 
@@ -21,6 +21,8 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = 
     Preconditions:
         - key in {'rating', 'release date'} or key == ''
     """
+    if movies is None:
+        movies = {}
     actors = graph.get_all_vertices('actor')
 
     if actor1 not in actors or actor2 not in actors:
@@ -46,12 +48,14 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = 
     return path, path_with_movies
 
 
-def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key: str = '',
                      lower: float = 0, upper: float = 0) -> None:
     """Cleanly print out the bacon path between two actors.
 
     Note: the filtering parameters are passed in case the function bacon_path needs them, since this function
     relies on bacon_path."""
+    if movies is None:
+        movies = {}
     actors = graph.get_all_vertices('actor')
 
     if actor1 not in actors or actor2 not in actors:
@@ -70,7 +74,7 @@ def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: 
     print(" -->> ".join(formatted_path))
 
 
-def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = '',
+def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict = None, key: str = '',
                  lower: float = 0, upper: float = 0) -> int:
     """Given the name of two actors, calculate their bacon number (the shortest path between them).
 
@@ -85,6 +89,8 @@ def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str 
     >>> bacon_number(g, 'Kevin Bacon', 'Dwayne Johnson')
     2
     """
+    if movies is None:
+        movies = {}
     actors = graph.get_all_vertices('actor')
 
     if actor1 not in actors or actor2 not in actors:
