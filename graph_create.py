@@ -63,9 +63,14 @@ def create_recommended_movie_graph(main_movie: str, recommendations: list | dict
     """Creates a graph based on the movie recommendation list or reccomendation dictionary
     Each vertex in the graph is a movie, and each edge in the graph is the actors that appear in both movies
     Also adds each movie's cast, year, votes, and rating to the _Vertex object
-    >>> movies = {'Movie1': ({'actor1', 'actor2'}, (1990, 200, 8.1)), \
-                'Movie2': ({'actor1', 'actor4'}, (1990, 200, 6)), 'Movie3': ({'actor5'}, (1989, 200, 8.4))}
     >>> recommendations = ['Shaun the Sheep Movie', 'Wild Romance', 'Shut Up and Shoot Me']
+    >>> sim_scores = {'Shaun the Sheep Movie': 0.87, 'Wild Romance': 0.2, 'Shut Up and Shoot Me': 0.99}
+    >>> main_movie = 'Ghost Stories'
+    >>> graph = create_recommended_movie_graph(main_movie, recommendations, sim_scores)
+    >>> graph.adjacent('Shaun the Sheep Movie', 'Ghost Stories')
+    True
+    >>> graph.adjacent('Shaun the Sheep Movie', 'Wild Romance')
+    False
     """
 
     graph = Graph()
