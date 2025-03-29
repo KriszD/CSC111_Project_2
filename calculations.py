@@ -205,7 +205,10 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
 
         final_recommendations = {}
         for movie in sorted_recommendations[:limit]:
-            final_recommendations[movie] = key + ' = ' + str(movies[movie][1][i])
+            if i == 2:
+                final_recommendations[movie] = float(movies[movie][1][i])
+            elif i == 0:
+                final_recommendations[movie] = int(movies[movie][1][i])
 
         return final_recommendations, recommendations
 
