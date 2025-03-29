@@ -30,23 +30,24 @@ if __name__ == '__main__':
     while running:
         print('======================================================================================')
         print('Your options are: ', menu)
-        choice = int(input("Your choice: "))
+        choice = input("Your choice: ").strip()
 
-        if choice not in [1, 2, 3, 4, 5]:
+        while choice not in ['1', '2', '3', '4', '5']:
             print("Invalid Choice, try Again.")
+            choice = input("Your choice: ").strip()
 
-        if choice == 1:
+        if choice == '1':
             actor_limit = int(input("Number of actors: "))
             calculations.ranking(average_bacon_numbers, actor_limit)
 
-        if choice == 2:
+        if choice == '2':
             actor_name = str(input("Actor Name: ")).strip()
             print("The Average Bacon Number for", actor_name, "is:", calculations.average_bacon_number(actor_graph,
                                                                                                        actor_name))
             print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor_name) + 1, "out of",
                   len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
 
-        if choice == 3:
+        if choice == '3':
             actor1_name = str(input("Actor 1 Name: ")).strip()
             actor2_name = str(input("Actor 2 Name: ")).strip()
             filter_key = str(input("Optional Filters: release date, rating. Type NO if you do not"
@@ -79,7 +80,7 @@ if __name__ == '__main__':
 
             graph_display.visualize_actor_path(actor_graph, actor_path, (actor1_name, actor2_name))
 
-        if choice == 4:
+        if choice == '4':
             movie_name = str(input("Movie Name: ")).strip()
             movie_limit = int(input("Number of Recommendations: "))
             filter_key = str(input("Optional Filters: release date, rating. Type NO if you do not"
@@ -95,6 +96,6 @@ if __name__ == '__main__':
             else:
                 print("Recommended Movies: ", calculations.get_recommendations(movie_dict, movie_name, movie_limit)[0])
 
-        if choice == 5:
+        if choice == '5':
             print("Bye! We hope you enjoyed our project! :)")
             running = False
