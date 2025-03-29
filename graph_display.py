@@ -34,9 +34,11 @@ def visualize_actor_path(graph: Graph, path: list[str], fallback_actors: tuple[s
         output_file: If provided, the Plotly figure is saved to this file; otherwise, it is displayed.
     """
     # If no path is found, and fallback actors are provided, use them.
+    used_fallback_actors = False
     if not path:
         if fallback_actors is not None:
             path = list(fallback_actors)
+            used_fallback_actors = True
         else:
             print("No path found and no fallback actors provided.")
             return
@@ -49,7 +51,7 @@ def visualize_actor_path(graph: Graph, path: list[str], fallback_actors: tuple[s
         g.add_node(actor, kind='actor')
 
     # Only add edges if a path was actually found (i.e. if fallback actors are not used)
-    if len(path) > 1 and graph.get_common_movies(path[0], path[1]):
+    if len(path) > 1 and graph.get_common_movies(path[0], path[1]) and not used_fallback_actors:
         for i in range(len(path) - 1):
             actor1 = path[i]
             actor2 = path[i + 1]
