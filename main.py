@@ -1,4 +1,8 @@
-"""Running the program"""
+"""HAM and Bacon - CSC111 Project 2.
+
+Instructions: run the main method in order to use the menu. Read the project report for more information on running.
+
+This project was created by Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu."""
 from typing import Any
 
 import python_ta
@@ -213,11 +217,11 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
 
 
 if __name__ == '__main__':
-    python_ta.check_all(config={
-        'extra-imports': ['graph_entities', 'graph_create', 'graph_display'],  # the names (strs) of imported modules
-        'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
-        'max-line-length': 120
-    })
+    # python_ta.check_all(config={
+    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display'],  # the names (strs) of imported modules
+    #     'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 120
+    # })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
