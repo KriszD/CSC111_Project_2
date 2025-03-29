@@ -24,7 +24,7 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: str = 
     actors = graph.get_all_vertices('actor')
 
     if actor1 not in actors or actor2 not in actors:
-        raise ValueError("At least one of those actors is not in this graph.")
+        raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
 
     path = graph.shortest_path_bfs(actor1, actor2)
     path_with_movies = []
@@ -52,6 +52,11 @@ def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict, key: 
 
     Note: the filtering parameters are passed in case the function bacon_path needs them, since this function
     relies on bacon_path."""
+    actors = graph.get_all_vertices('actor')
+
+    if actor1 not in actors or actor2 not in actors:
+        raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
+
     _, path = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
 
     formatted_path = []
@@ -80,6 +85,11 @@ def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str 
     >>> bacon_number(g, 'Kevin Bacon', 'Dwayne Johnson')
     2
     """
+    actors = graph.get_all_vertices('actor')
+
+    if actor1 not in actors or actor2 not in actors:
+        raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
+
     path, _ = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
     return len(path) - 1
 
@@ -87,6 +97,9 @@ def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict, key: str 
 def average_bacon_number(graph: Graph, actor: str) -> float:
     """Given an actor's name, find their average Bacon number by finding their shortest path (if possible)
     to all other actors, and taking the average."""
+    if actor not in graph.get_all_vertices('actor'):
+        raise ValueError("This is not a valid name OR this actor is not in our dataset.")
+
     distances = graph.shortest_distance_bfs(actor)
 
     total_distance = sum(dist for dist in distances.values() if dist != float("inf"))
@@ -124,6 +137,8 @@ def ranking(data: dict[str, float], limit: int) -> None:
 def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     """Returns the similarity score between two movies based on dividing the intersection of their cast members
     by the union of their cast members."""
+    if movie1 not in movies or movie2 not in movies:
+        raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
 
     if movies[movie1][0] == set() or movies[movie2][0] == set():
         return 0
@@ -140,6 +155,9 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
     Preconditions:
     - key in {'rating', 'release date'} or key == ''
     """
+    if input_movie not in movies:
+        raise ValueError("This is not a valid name OR this movie is not in our dataset.")
+
     recommendations = {}
 
     if key == '':
@@ -178,6 +196,8 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
     Preconditions:
         - key in {'rating', 'release date'} or key == ''
     """
+    if input_movie not in movies:
+        raise ValueError("This is not a valid name OR this movie is not in our dataset.")
 
     if key == 'rating':
         return lower <= float(movies[input_movie][1][2]) <= upper
