@@ -5,6 +5,7 @@ import python_ta
 
 from graph_entities import Graph
 import graph_create
+import graph_display
 
 
 #######################################################################################################################
@@ -155,7 +156,8 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
 
 
 def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '',
-                        lower: float = 0, upper: float = 0) -> dict[Any, Any] | list[Any]:
+                        lower: float = 0, upper: float = 0) -> (tuple[dict[Any, Any], dict[str, float]] |
+                                                                tuple[list[Any], dict[str, float]]):
     """Get movie recommendations given an input movie.
 
     Preconditions:
@@ -174,7 +176,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
                     recommendations[movie] = sim_score
 
         sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
-        return sorted_recommendations[:limit]
+        return sorted_recommendations[:limit], recommendations
 
     if key in {'rating', 'release date'}:
         for movie in movies:
@@ -191,7 +193,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
         for movie in sorted_recommendations[:limit]:
             final_recommendations[movie] = key + ' = ' + str(movies[movie][1][i])
 
-        return final_recommendations
+        return final_recommendations, recommendations
 
     raise ValueError
 
@@ -244,42 +246,54 @@ if __name__ == '__main__':
             ranking(average_bacon_numbers, limit)
 
         if choice == 2:
-            actor = str(input("Actor Name: "))
+            actor = str(input("Actor Name: ")).strip()
             print("The Average Bacon Number for", actor, "is:", average_bacon_number(actor_graph, actor))
             print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor) + 1, "out of",
                   len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
 
         if choice == 3:
-            actor1 = str(input("Actor 1 Name: "))
-            actor2 = str(input("Actor 2 Name: "))
-            key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
+            actor1 = str(input("Actor 1 Name: ")).strip()
+            actor2 = str(input("Actor 2 Name: ")).strip()
+            key = str(input("Optional Filters: release date, rating. Type NO if you do not"
+                            " want it to be filtered. ")).strip()
 
             if key != 'NO':
                 lower = float(input("Lower bound for filtering: "))
                 upper = float(input("Upper bound for filtering: "))
-                print("The Bacon Number between", actor1, "and", actor2, "is:",
-                      bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper))
-                print("A path between them is: ")
-                print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                num = bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                if num < 0:
+                    print("These actors share no path.")
+                else:
+                    print("The Bacon Number between", actor1, "and", actor2, "is:", num)
+                    print("A path between them is: ")
+                    print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                path, _ = bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
 
             else:
-                print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1,
-                                                                                             actor2, movie_dict))
-                print("A path between them is: ")
-                print_bacon_path(actor_graph, actor1, actor2, movie_dict)
+                num = bacon_number(actor_graph, actor1, actor2, movie_dict)
+                if num < 0:
+                    print("These actors share no path.")
+                else:
+                    print("The Bacon Number between", actor1, "and", actor2, "is:", num)
+                    print("A path between them is: ")
+                    print_bacon_path(actor_graph, actor1, actor2, movie_dict)
+                path, _ = bacon_path(actor_graph, actor1, actor2)
+
+            graph_display.visualize_actor_path(actor_graph, path, (actor1, actor2))
 
         if choice == 4:
-            movie = str(input("Movie Name: "))
+            movie = str(input("Movie Name: ")).strip()
             limit = int(input("Number of Recommendations: "))
-            key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
+            key = str(input("Optional Filters: release date, rating. Type NO if you do not"
+                            " want it to be filtered. ")).strip()
 
             if key != 'NO':
                 lower = float(input("Lower bound for filtering: "))
                 upper = float(input("Upper bound for filtering: "))
-                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper))
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper)[0])
 
             else:
-                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit))
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit)[0])
 
         if choice == 5:
             print("Bye! We hope you enjoyed our project! :)")

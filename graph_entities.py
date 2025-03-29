@@ -25,7 +25,7 @@ class _Vertex:
     kind: str
     neighbours: set[_Vertex]
     appearences: set[str]
-    cast_members: set[str]
+    sim_score: float
     movie_info: tuple[int, int, float]  # (year, votes, rating)
 
     def __init__(self, item: Any, kind: str) -> None:
@@ -36,13 +36,12 @@ class _Vertex:
         Preconditions:
             - kind in {'actor', 'movie'}
             - self.appearences = set() or kind = 'actor'
-            - self.cast_members = set() or kind = 'movie'
         """
         self.item = item
         self.kind = kind
         self.neighbours = set()
         self.appearences = set()
-        self.cast_members = set()
+        self.sim_score = 0
 
 
 class Graph:
@@ -132,14 +131,20 @@ class Graph:
         else:
             raise ValueError
 
-    def add_movie_info(self, movie: str, actors: set, movie_info: tuple) -> None:
-        """Adds cast members and movie info (year, votes, rating) to a movie
-        Raise a ValueError if movie does not appear as a vertex in this graph."""
-        if movie in self._vertices:
-            self._vertices[movie].cast_members.update(actors)
-            self._vertices[movie].movie_info = movie_info
-        else:
-            raise ValueError
+    # def add_movie_info(self, movie: str, actors: set, movie_info: tuple) -> None:
+    #     """Adds cast members and movie info (year, votes, rating) to a movie
+    #     Raise a ValueError if movie does not appear as a vertex in this graph."""
+    #     if movie in self._vertices:
+    #         self._vertices[movie].cast_members.update(actors)
+    #         self._vertices[movie].movie_info = movie_info
+    #     else:
+    #         raise ValueError
+
+    def add_sim_score(self, movie: str, sim_score: dict | float) -> None:
+        """Adds a movie's similarity score."""
+        if isinstance(sim_score, dict):
+            sim_score = sim_score[movie]
+        self._vertices[movie].sim_score = sim_score
 
     def item_in_graph(self, item: str) -> bool:
         """Returns whether the given item appears as a vertex in this graph."""
@@ -158,9 +163,9 @@ class Graph:
         """Returns a set of movies an actor has appeared in"""
         return self._vertices[actor].appearences
 
-#######################################################################################################################
-# BFS (Breadth First Search)
-#######################################################################################################################
+    ####################################################################################################################
+    # BFS (Breadth First Search)
+    ####################################################################################################################
 
     def shortest_path_bfs(self, starting_item: str, target_item: str) -> str | list[Any]:
         """Find the shortest path between two actors using BFS."""
