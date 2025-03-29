@@ -5,6 +5,7 @@ import python_ta
 
 from graph_entities import Graph
 import graph_create
+import graph_display
 
 
 #######################################################################################################################
@@ -257,16 +258,26 @@ if __name__ == '__main__':
             if key != 'NO':
                 lower = float(input("Lower bound for filtering: "))
                 upper = float(input("Upper bound for filtering: "))
-                print("The Bacon Number between", actor1, "and", actor2, "is:",
-                      bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper))
-                print("A path between them is: ")
-                print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                num = bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                if num < 0:
+                    print("These actors share no path.")
+                else:
+                    print("The Bacon Number between", actor1, "and", actor2, "is:", num)
+                    print("A path between them is: ")
+                    print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                path, _ = bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
 
             else:
-                print("The Bacon Number between", actor1, "and", actor2, "is:", bacon_number(actor_graph, actor1,
-                                                                                             actor2, movie_dict))
-                print("A path between them is: ")
-                print_bacon_path(actor_graph, actor1, actor2, movie_dict)
+                num = bacon_number(actor_graph, actor1, actor2, movie_dict)
+                if num < 0:
+                    print("These actors share no path.")
+                else:
+                    print("The Bacon Number between", actor1, "and", actor2, "is:", num)
+                    print("A path between them is: ")
+                    print_bacon_path(actor_graph, actor1, actor2, movie_dict)
+                path, _ = bacon_path(actor_graph, actor1, actor2)
+
+            graph_display.visualize_actor_path(actor_graph, path, (actor1, actor2))
 
         if choice == 4:
             movie = str(input("Movie Name: "))
