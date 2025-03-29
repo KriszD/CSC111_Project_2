@@ -155,9 +155,8 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     return len(sim_intersection) / len(sim_union)
 
 
-def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '',
-                        lower: float = 0, upper: float = 0) -> (tuple[dict[Any, Any], dict[str, float]] |
-                                                                tuple[list[Any], dict[str, float]]):
+def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '', lower: float = 0, upper: float = 0)\
+        -> (tuple[dict[Any, Any], dict[str, float]] | tuple[list[Any], dict[str, float]]):
     """Get movie recommendations given an input movie.
 
     Preconditions:
@@ -170,20 +169,18 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
 
     if key == '':
         for movie in movies:
-            if movie != input_movie:
-                sim_score = get_similarity_score_dict(movies, input_movie, movie)
-                if sim_score > 0:
-                    recommendations[movie] = sim_score
+            sim_score = get_similarity_score_dict(movies, input_movie, movie)
+            if movie != input_movie and sim_score > 0:
+                recommendations[movie] = sim_score
 
         sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
         return sorted_recommendations[:limit], recommendations
 
     if key in {'rating', 'release date'}:
         for movie in movies:
-            if movie != input_movie and similarity_filter(movies, movie, key, lower, upper):
-                sim_score = get_similarity_score_dict(movies, input_movie, movie)
-                if sim_score > 0:
-                    recommendations[movie] = sim_score
+            sim_score = get_similarity_score_dict(movies, input_movie, movie)
+            if movie != input_movie and similarity_filter(movies, movie, key, lower, upper) and sim_score > 0:
+                recommendations[movie] = sim_score
 
         sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
 
@@ -216,11 +213,11 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
 
 
 if __name__ == '__main__':
-    # python_ta.check_all(config={
-    #     'extra-imports': ['graph_entities', 'graph_create'],  # the names (strs) of imported modules
-    #     'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
-    #     'max-line-length': 120
-    # })
+    python_ta.check_all(config={
+        'extra-imports': ['graph_entities', 'graph_create', 'graph_display'],  # the names (strs) of imported modules
+        'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
