@@ -5,9 +5,7 @@ from typing import Any
 
 
 class _Vertex:
-    """A vertex in a movie review graph, used to represent an actor or a movie.
-
-    Each vertex item is either an actor or movie.
+    """A vertex in a actor/movie graph, where each vertex item is either an actor or movie.
 
     Instance Attributes:
         - item: The data stored in this vertex, representing an actor or movie.
