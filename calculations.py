@@ -1,6 +1,7 @@
 """All the calculations that are performed for our project."""
 from typing import Any
 
+import graph_create
 from graph_entities import Graph
 
 
@@ -17,6 +18,13 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key:
 
     Preconditions:
         - key in {'rating', 'release date'} or key == ''
+        - movies == None and lower == 0 and upper == 0 or key != ''
+    >>> bp_graph, movies_dict = graph_create.initialize_graphs('datasets/full_dataset.csv')
+    >>> bp = bacon_path(bp_graph, 'Fred Astaire', 'Dwayne Johnson')[0]
+    >>> len(bp) == 3
+    True
+    >>> bp[0] == 'Fred Astaire' and bp[2] == 'Dwayne Johnson'
+    True
     """
     if movies is None:
         movies = {}
@@ -99,7 +107,16 @@ def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict = None, ke
 
 def average_bacon_number(graph: Graph, actor: str) -> float:
     """Given an actor's name, find their average Bacon number by finding their shortest path (if possible)
-    to all other actors, and taking the average."""
+    to all other actors, and taking the average.
+
+    Preconditions:
+    - actor in graph.get_all_vertices('actor')
+    >>> avg_bn_graph = graph_create.initialize_graphs('datasets/full_dataset.csv')[0]
+    >>> average_bacon_number(avg_bn_graph, 'Fred Astaire')
+    2.4230608404766882
+    >>> average_bacon_number(avg_bn_graph, 'Michele Morrone')
+    1.0
+    """
     if actor not in graph.get_all_vertices('actor'):
         raise ValueError("This is not a valid name OR this actor is not in our dataset.")
 
@@ -112,7 +129,8 @@ def average_bacon_number(graph: Graph, actor: str) -> float:
 
 
 def compute_average_bacon_numbers(graph: Graph) -> dict:
-    """Compute the average Bacon number for every actor in the graph and store it in a dictionary."""
+    """Compute the average Bacon number for every actor in the graph and store it in a dictionary.
+    """
     actors = graph.get_all_vertices('actor')
     averages = {}
 
@@ -123,7 +141,8 @@ def compute_average_bacon_numbers(graph: Graph) -> dict:
 
 
 def ranking(data: dict[str, float], limit: int) -> None:
-    """Print out the ranking of <limit> actors based on their average bacon numbers."""
+    """Print out the ranking of <limit> actors based on their average bacon numbers.
+    """
     i = 0
     for actor, avg in data.items():
         if i == limit:
@@ -139,7 +158,8 @@ def ranking(data: dict[str, float], limit: int) -> None:
 
 def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     """Returns the similarity score between two movies based on dividing the intersection of their cast members
-    by the union of their cast members."""
+    by the union of their cast members.
+    """
     if movie1 not in movies or movie2 not in movies:
         raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
 
@@ -151,9 +171,10 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     return len(sim_intersection) / len(sim_union)
 
 
-def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '', lower: float = 0, upper: float = 0) \
+def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '', lower: float = 0, upper: float = 0)\
         -> (tuple[dict[Any, Any], dict[str, float]] | tuple[list[Any], dict[str, float]]):
-    """Get movie recommendations given an input movie.
+    """Get movie recommendations given an input movie using the similarity score algorithm
+    (intersection of cast / union of cast).
 
     Preconditions:
     - key in {'rating', 'release date'} or key == ''
