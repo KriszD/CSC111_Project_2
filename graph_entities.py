@@ -123,6 +123,10 @@ class Graph:
         else:
             return set(self._vertices.keys())
 
+    def get_vertices(self) -> dict:
+        """Return the dictionary of vertices in the graph."""
+        return self._vertices
+
     def add_appearences(self, actor: str, movie: str) -> None:
         """Adds a movie the actor has appeared in to a set.
         Raise a ValueError if actor does not appear as a vertex in this graph."""
