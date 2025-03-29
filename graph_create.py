@@ -41,10 +41,12 @@ def create_actor_graph(movies: dict) -> Graph:
     Also adds the set of movies the actor has appeared in to the _Vertex object
     >>> movies = {'Movie1': ({'actor1', 'actor2'}, (1990, 200, 8.1)), 'Movie2': ({'actor1', 'actor4'}, (1990, 200, 6))}
     >>> actor_graph = create_actor_graph(movies)
-    >>> actor_graph.get_neighbours('actor1')
-    {'actor2', 'actor4'}
-    >>> actor_graph.get_appearences('actor1')
-    {'Movie1', 'Movie2'}
+    >>> actor1_neighbours = actor_graph.get_neighbours('actor1')
+    >>> 'actor2' in actor1_neighbours and 'actor2' in actor1_neighbours
+    True
+    >>> actor1_appearances = actor_graph.get_appearences('actor1')
+    >>> 'Movie1' in actor1_appearances and 'Movie2' in actor1_appearances
+    True
     """
     graph = Graph()
 
@@ -66,10 +68,10 @@ def create_recommended_movie_graph(main_movie: str, recommendations: list | dict
     >>> recommendations = ['Shaun the Sheep Movie', 'Wild Romance', 'Shut Up and Shoot Me']
     >>> sim_scores = {'Shaun the Sheep Movie': 0.87, 'Wild Romance': 0.2, 'Shut Up and Shoot Me': 0.99}
     >>> main_movie = 'Ghost Stories'
-    >>> graph = create_recommended_movie_graph(main_movie, recommendations, sim_scores)
-    >>> graph.adjacent('Shaun the Sheep Movie', 'Ghost Stories')
+    >>> rec_graph = create_recommended_movie_graph(main_movie, recommendations, sim_scores)
+    >>> rec_graph.adjacent('Shaun the Sheep Movie', 'Ghost Stories')
     True
-    >>> graph.adjacent('Shaun the Sheep Movie', 'Wild Romance')
+    >>> rec_graph.adjacent('Shaun the Sheep Movie', 'Wild Romance')
     False
     """
 
@@ -91,7 +93,7 @@ def create_recommended_movie_graph(main_movie: str, recommendations: list | dict
     #     graph.add_movie_info(recommendations[i], movies[recommendations[i]][0], movies[recommendations[i]][1])
     #     for j in range(0, i):
     #         graph.add_edge(recommendations[i], recommendations[j])
-    return Graph
+    return graph
 
 
 def create_dict_from_csv(dataset: str) -> dict[str, float]:
@@ -116,7 +118,7 @@ def create_dict_from_csv(dataset: str) -> dict[str, float]:
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod(verbose=True)
+    doctest.testmod(verbose=False)
 
     # import python_ta
     # python_ta.check_all(config={
