@@ -246,15 +246,16 @@ if __name__ == '__main__':
             ranking(average_bacon_numbers, limit)
 
         if choice == 2:
-            actor = str(input("Actor Name: "))
+            actor = str(input("Actor Name: ")).strip()
             print("The Average Bacon Number for", actor, "is:", average_bacon_number(actor_graph, actor))
             print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor) + 1, "out of",
                   len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
 
         if choice == 3:
-            actor1 = str(input("Actor 1 Name: "))
-            actor2 = str(input("Actor 2 Name: "))
-            key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
+            actor1 = str(input("Actor 1 Name: ")).strip()
+            actor2 = str(input("Actor 2 Name: ")).strip()
+            key = str(input("Optional Filters: release date, rating. Type NO if you do not"
+                            " want it to be filtered. ")).strip()
 
             if key != 'NO':
                 lower = float(input("Lower bound for filtering: "))
@@ -281,9 +282,10 @@ if __name__ == '__main__':
             graph_display.visualize_actor_path(actor_graph, path, (actor1, actor2))
 
         if choice == 4:
-            movie = str(input("Movie Name: "))
+            movie = str(input("Movie Name: ")).strip()
             limit = int(input("Number of Recommendations: "))
-            key = str(input("Optional Filters: release date, rating. Type NO if you do not want it to be filtered. "))
+            key = str(input("Optional Filters: release date, rating. Type NO if you do not"
+                            " want it to be filtered. ")).strip()
 
             if key != 'NO':
                 lower = float(input("Lower bound for filtering: "))
