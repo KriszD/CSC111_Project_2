@@ -24,6 +24,7 @@ class _Vertex:
     neighbours: set[_Vertex]
     appearance: set[str]
     cast_members: set[str]
+    sim_score: float
     movie_info: tuple[int, int, float]  # (year, votes, rating)
 
     def __init__(self, item: Any, kind: str) -> None:
@@ -41,6 +42,7 @@ class _Vertex:
         self.neighbours = set()
         self.appearance = set()
         self.cast_members = set()
+        self.sim_score = 0
 
 
 class Graph:
@@ -138,6 +140,12 @@ class Graph:
             self._vertices[movie].movie_info = movie_info
         else:
             raise ValueError
+
+    def add_sim_score(self, movie: str, sim_score: dict | float) -> None:
+        """Adds a movie's similarity score."""
+        if isinstance(sim_score, dict):
+            sim_score = sim_score[movie]
+        self._vertices[movie].sim_score = sim_score
 
     def item_in_graph(self, item: str) -> bool:
         """Returns whether the given item appears as a vertex in this graph."""
