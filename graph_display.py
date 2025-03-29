@@ -2,8 +2,8 @@
 
 import networkx as nx
 import python_ta
-from graph_entities import Graph
 from plotly.graph_objs import Scatter, Figure
+from graph_entities import Graph
 
 COLOUR_SCHEME = [
     '#2E91E5', '#E15F99', '#1CA71C', '#FB0D0D', '#DA16FF', '#222A2A', '#B68100',
