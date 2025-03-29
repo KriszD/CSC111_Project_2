@@ -5,14 +5,15 @@ from typing import Any
 
 
 class _Vertex:
-    """A vertex in a movie review graph, used to represent an actor or a movie.
-
-    Each vertex item is either an actor or movie.
+    """A vertex in a actor/movie graph, where each vertex item is either an actor or movie.
 
     Instance Attributes:
         - item: The data stored in this vertex, representing an actor or movie.
         - kind: The type of this vertex: 'actor' or 'movie'.
         - neighbours: The vertices that are adjacent to this vertex.
+        - appearances: The movies an actor appears in (for the actor vertices)
+        - cast_members: The actors that appear in a movie (for the movie vertices)
+        - movie_info: Information about a movie vertex stored in a tuple containing (year, votes, rating)
 
     Representation Invariants:
         - self not in self.neighbours
@@ -100,8 +101,6 @@ class Graph:
 
     def get_neighbours(self, item: Any) -> set:
         """Return a set of the neighbours of the given item.
-
-        Note that the *items* are returned, not the _Vertex objects themselves.
 
         Raise a ValueError if item does not appear as a vertex in this graph.
         """
