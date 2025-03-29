@@ -242,58 +242,63 @@ if __name__ == '__main__':
             print("Invalid Choice, try Again.")
 
         if choice == 1:
-            limit = int(input("Number of actors: "))
-            ranking(average_bacon_numbers, limit)
+            actor_limit = int(input("Number of actors: "))
+            ranking(average_bacon_numbers, actor_limit)
 
         if choice == 2:
-            actor = str(input("Actor Name: ")).strip()
-            print("The Average Bacon Number for", actor, "is:", average_bacon_number(actor_graph, actor))
-            print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor) + 1, "out of",
+            actor_name = str(input("Actor Name: ")).strip()
+            print("The Average Bacon Number for", actor_name, "is:", average_bacon_number(actor_graph, actor_name))
+            print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor_name) + 1, "out of",
                   len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
 
         if choice == 3:
-            actor1 = str(input("Actor 1 Name: ")).strip()
-            actor2 = str(input("Actor 2 Name: ")).strip()
-            key = str(input("Optional Filters: release date, rating. Type NO if you do not"
-                            " want it to be filtered. ")).strip()
+            actor1_name = str(input("Actor 1 Name: ")).strip()
+            actor2_name = str(input("Actor 2 Name: ")).strip()
+            filter_key = str(input("Optional Filters: release date, rating. Type NO if you do not"
+                                   " want it to be filtered. ")).strip()
 
-            if key != 'NO':
-                lower = float(input("Lower bound for filtering: "))
-                upper = float(input("Upper bound for filtering: "))
-                num = bacon_number(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+            if filter_key != 'NO':
+                lower_threshold = float(input("Lower bound for filtering: "))
+                upper_threshold = float(input("Upper bound for filtering: "))
+                num = bacon_number(actor_graph, actor1_name, actor2_name, movie_dict, filter_key, lower_threshold,
+                                   upper_threshold)
                 if num < 0:
                     print("These actors share no path.")
                 else:
-                    print("The Bacon Number between", actor1, "and", actor2, "is:", num)
+                    print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
-                    print_bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
-                path, _ = bacon_path(actor_graph, actor1, actor2, movie_dict, key, lower, upper)
+                    print_bacon_path(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
+                                     lower_threshold, upper_threshold)
+                actor_path, _ = bacon_path(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
+                                           lower_threshold, upper_threshold)
 
             else:
-                num = bacon_number(actor_graph, actor1, actor2, movie_dict)
+                num = bacon_number(actor_graph, actor1_name, actor2_name, movie_dict)
                 if num < 0:
                     print("These actors share no path.")
                 else:
-                    print("The Bacon Number between", actor1, "and", actor2, "is:", num)
+                    print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
-                    print_bacon_path(actor_graph, actor1, actor2, movie_dict)
-                path, _ = bacon_path(actor_graph, actor1, actor2)
+                    print_bacon_path(actor_graph, actor1_name, actor2_name, movie_dict)
+                actor_path, _ = bacon_path(actor_graph, actor1_name, actor2_name)
 
-            graph_display.visualize_actor_path(actor_graph, path, (actor1, actor2))
+            graph_display.visualize_actor_path(actor_graph, actor_path, (actor1_name, actor2_name))
 
         if choice == 4:
-            movie = str(input("Movie Name: ")).strip()
-            limit = int(input("Number of Recommendations: "))
-            key = str(input("Optional Filters: release date, rating. Type NO if you do not"
-                            " want it to be filtered. ")).strip()
+            movie_name = str(input("Movie Name: ")).strip()
+            movie_limit = int(input("Number of Recommendations: "))
+            filter_key = str(input("Optional Filters: release date, rating. Type NO if you do not"
+                                   " want it to be filtered. ")).strip()
 
-            if key != 'NO':
-                lower = float(input("Lower bound for filtering: "))
-                upper = float(input("Upper bound for filtering: "))
-                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper)[0])
+            if filter_key != 'NO':
+                lower_threshold = float(input("Lower bound for filtering: "))
+                upper_threshold = float(input("Upper bound for filtering: "))
+                print("Recommended Movies: ",
+                      get_recommendations(movie_dict, movie_name, movie_limit, filter_key,
+                                          lower_threshold, upper_threshold)[0])
 
             else:
-                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit)[0])
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie_name, movie_limit)[0])
 
         if choice == 5:
             print("Bye! We hope you enjoyed our project! :)")
