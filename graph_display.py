@@ -1,4 +1,4 @@
-"""Functions for diplaying the graph."""
+"""Functions for diplaying the graph"""
 
 import networkx as nx
 import python_ta
