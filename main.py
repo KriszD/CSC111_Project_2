@@ -11,8 +11,8 @@ import calculations
 
 if __name__ == '__main__':
     # python_ta.check_all(config={
-    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display'],  # the names (strs) of imported modules
-    #     'allowed-io': ['print_bacon_path', 'ranking'],  # the names (strs) of functions that call print/open/input
+    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
+    #     'allowed-io': ['print_bacon_path', 'ranking'],
     #     'max-line-length': 120
     # })
 
@@ -125,13 +125,17 @@ if __name__ == '__main__':
                 while not lower_threshold.isnumeric():
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
-                print("Recommended Movies: ",
-                      calculations.get_recommendations(movie_dict, movie_name, int(movie_limit), filter_key,
-                                                       float(lower_threshold), float(upper_threshold))[0])
+                rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit),
+                                                                          filter_key, float(lower_threshold),
+                                                                          float(upper_threshold))
+                print("Recommended Movies: ", rec_result)
 
             else:
-                print("Recommended Movies: ", calculations.get_recommendations(movie_dict,
-                                                                               movie_name, int(movie_limit))[0])
+                rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit))
+                print("Recommended Movies: ", rec_result)
+
+            movie_graph = graph_create.create_recommended_movie_graph(movie_name, rec_result, sim_scores)
+            graph_display.visualize_movie_graph(movie_graph)
 
         if choice == '5':
             print("Bye! We hope you enjoyed our project! :)")
