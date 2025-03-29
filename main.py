@@ -156,7 +156,8 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
 
 
 def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '',
-                        lower: float = 0, upper: float = 0) -> dict[Any, Any] | list[Any]:
+                        lower: float = 0, upper: float = 0) -> (tuple[dict[Any, Any], dict[str, float]] |
+                                                                tuple[list[Any], dict[str, float]]):
     """Get movie recommendations given an input movie.
 
     Preconditions:
@@ -175,7 +176,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
                     recommendations[movie] = sim_score
 
         sorted_recommendations = sorted(recommendations, key=recommendations.get, reverse=True)
-        return sorted_recommendations[:limit]
+        return sorted_recommendations[:limit], recommendations
 
     if key in {'rating', 'release date'}:
         for movie in movies:
@@ -192,7 +193,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
         for movie in sorted_recommendations[:limit]:
             final_recommendations[movie] = key + ' = ' + str(movies[movie][1][i])
 
-        return final_recommendations
+        return final_recommendations, recommendations
 
     raise ValueError
 
@@ -287,10 +288,10 @@ if __name__ == '__main__':
             if key != 'NO':
                 lower = float(input("Lower bound for filtering: "))
                 upper = float(input("Upper bound for filtering: "))
-                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper))
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit, key, lower, upper)[0])
 
             else:
-                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit))
+                print("Recommended Movies: ", get_recommendations(movie_dict, movie, limit)[0])
 
         if choice == 5:
             print("Bye! We hope you enjoyed our project! :)")
