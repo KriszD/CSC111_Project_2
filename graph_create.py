@@ -59,25 +59,13 @@ def create_actor_graph(movies: dict) -> Graph:
     return graph
 
 
-def create_bacon_actor_graph(movies: dict, path: list) -> Graph:
-    """Creates a graph displaying actors in a given bacon path"""
-    graph = Graph()
-
-    for actor in path:
-        graph.add_vertex(actor, 'actor')
-
-    for i in range(len(path) - 1):
-        graph.add_edge(path[i], path[i + 1])
-
-    return graph
-
-
-def create_recommended_movie_graph(recommendations: list | dict, movies: dict) -> Graph():
+def create_recommended_movie_graph(main_movie: str, recommendations: list | dict, sim_scores: dict) -> Graph():
     """Creates a graph based on the movie recommendation list or reccomendation dictionary
     Each vertex in the graph is a movie, and each edge in the graph is the actors that appear in both movies
     Also adds each movie's cast, year, votes, and rating to the _Vertex object
     >>> movies = {'Movie1': ({'actor1', 'actor2'}, (1990, 200, 8.1)), \
                 'Movie2': ({'actor1', 'actor4'}, (1990, 200, 6)), 'Movie3': ({'actor5'}, (1989, 200, 8.4))}
+    >>> recommendations = ['Shaun the Sheep Movie', 'Wild Romance', 'Shut Up and Shoot Me']
     """
 
     graph = Graph()
@@ -85,11 +73,19 @@ def create_recommended_movie_graph(recommendations: list | dict, movies: dict) -
     if isinstance(recommendations, dict):
         recommendations = list(recommendations.keys())
 
-    for i in range(len(recommendations)):
-        graph.add_vertex(recommendations[i], 'movie')
-        graph.add_movie_info(recommendations[i], movies[recommendations[i]][0], movies[recommendations[i]][1])
-        for j in range(0, i):
-            graph.add_edge(recommendations[i], recommendations[j])
+    graph.add_vertex(main_movie, 'movie')
+    graph.add_sim_score(main_movie, 1)
+
+    for movie in recommendations:
+        graph.add_vertex(movie, 'movie')
+        graph.add_sim_score(movie, sim_scores)
+        graph.add_edge(movie, main_movie)
+
+    # for i in range(len(recommendations)):
+    #     graph.add_vertex(recommendations[i], 'movie')
+    #     graph.add_movie_info(recommendations[i], movies[recommendations[i]][0], movies[recommendations[i]][1])
+    #     for j in range(0, i):
+    #         graph.add_edge(recommendations[i], recommendations[j])
     return Graph
 
 
