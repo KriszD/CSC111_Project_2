@@ -181,15 +181,16 @@ def get_edge_sim_label(v: Any, u: Any) -> str:
     """
     Determine the edge similarity label between two vertices.
     If one vertex is the main movie (sim_score == 1) and the other is not,
-    returns the recommended movie's sim_score as a string; otherwise, returns an empty string.
+    returns the recommended movie's sim_score as a string formatted to three decimal places;
+    otherwise, returns an empty string.
     """
     v_sim = getattr(v, 'sim_score', None)
     u_sim = getattr(u, 'sim_score', None)
     if v_sim is not None and u_sim is not None:
         if v_sim == 1 and u_sim != 1:
-            return str(u_sim)
+            return f"{u_sim:.3f}"
         elif u_sim == 1 and v_sim != 1:
-            return str(v_sim)
+            return f"{v_sim:.3f}"
     return ""
 
 
@@ -203,7 +204,7 @@ def movie_graph_to_networkx(movie_graph: Graph, max_vertices: int = 5000) -> nx.
     sim_score (set by add_sim_score). The main movie should have a sim_score of 1.
     """
     graph_nx = nx.Graph()
-    for v in movie_graph._vertices.values():
+    for v in movie_graph.get_vertices().values():
         if graph_nx.number_of_nodes() >= max_vertices:
             break
         # Add the main movie node.
@@ -238,9 +239,9 @@ def visualize_movie_graph(movie_graph: Graph, layout: str = 'spring_layout',
     pos = getattr(nx, layout)(graph_nx)
 
     # Extract node positions and labels.
-    x_values = [pos[node][0] for node in graph_nx.nodes]
-    y_values = [pos[node][1] for node in graph_nx.nodes]
-    labels = [graph_nx.nodes[node].get('label', node) for node in graph_nx.nodes]
+    x_values = [pos[n][0] for n in graph_nx.nodes]
+    y_values = [pos[n][1] for n in graph_nx.nodes]
+    labels = [graph_nx.nodes[n].get('label', n) for n in graph_nx.nodes]
 
     # Set a fixed base node size for the main movie.
     base_main_size = 30
