@@ -1,5 +1,6 @@
 # HAM and Bacon Requirements:
-python-ta~=2.10.1
+python-ta~=2.9.1
+
 # Graphics and data visualization
 plotly~=6.0.1
 networkx~=3.4.2
