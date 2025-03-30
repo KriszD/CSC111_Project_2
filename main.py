@@ -2,7 +2,10 @@
 
 Instructions: run the main method in order to use the menu. Read the project report for more information on running.
 
-This project was created by Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu."""
+This project was created by Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu.
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu.
+"""
+
 import graph_create
 import graph_display
 import calculations

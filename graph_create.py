@@ -1,8 +1,12 @@
-"""Functions for creating the graph"""
-from __future__ import annotations
+"""HAM and Bacon - graph_create.py
 
+This file contains functions for reading data from our datasets as well as functions for creating graphs/dictionaries
+that store the processed information.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu"""
+
+from __future__ import annotations
 import csv
-import python_ta
 from graph_entities import Graph
 
 
@@ -122,6 +126,7 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=False)
 
+    import python_ta
     python_ta.check_all(config={
         'extra-imports': ['graph_entities', 'csv'],
         'allowed-io': ['load_csv_file', 'create_dict_from_csv'],

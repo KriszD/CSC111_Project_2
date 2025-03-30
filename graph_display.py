@@ -1,4 +1,9 @@
-"""Functions for diplaying the graph."""
+"""HAM and Bacon - graph_display.py.
+
+This file contains functions for displaying our generated graphs.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu.
+"""
 
 import networkx as nx
 from plotly.graph_objs import Scatter, Figure

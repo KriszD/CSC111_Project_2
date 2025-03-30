@@ -1,4 +1,10 @@
-"""All the calculations that are performed for our project."""
+"""HAM and Bacon - calculations.py
+
+This file contains functions for performing calculations on our stored data.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu.
+"""
+
 from typing import Any
 from random import choice
 from graph_entities import Graph

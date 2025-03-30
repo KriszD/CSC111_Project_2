@@ -1,4 +1,9 @@
-"""Graph Classes"""
+"""HAM and Bacon - graph_entities.py
+
+Contains Graph and Vertex classes, as well as methods for dealing with Graph and Vertex data.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu."""
+
 from __future__ import annotations
 from collections import deque
 from typing import Any
