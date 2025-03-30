@@ -44,7 +44,9 @@ class _Vertex:
 
         Preconditions:
             - kind in {'actor', 'movie'}
-            - self.appearences = set() or kind = 'actor'
+            - self.appearences == set() or kind == 'actor'
+            - self.sim_score == 0 or kind == 'movie'
+            - self.movie_info == (0,0,0) or kind == 'movie'
         """
         self.item = item
         self.kind = kind
@@ -55,7 +57,7 @@ class _Vertex:
 
 
 class Graph:
-    """A graph used to represent a book review network.
+    """A graph used to represent a network of actors/movies.
     """
     # Private Instance Attributes:
     #     - _vertices:
@@ -185,7 +187,11 @@ class Graph:
             raise ValueError
 
     def get_appearances(self, actor: str) -> set:
-        """Returns a set of movies an actor has appeared in"""
+        """Returns a set of movies an actor has appeared in
+
+        Preconditions:
+        - actor in self._vertices
+        """
         return self._vertices[actor].appearances
 
     def get_random_item(self) -> Any:
