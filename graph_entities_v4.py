@@ -13,6 +13,7 @@ class _Vertex:
         - neighbours: The vertices that are adjacent to this vertex.
         - appearances: The movies an actor appears in (for the actor vertices)
         - cast_members: The actors that appear in a movie (for the movie vertices)
+        - sim_score: The similarity of the item of a movie vertex to an input movie.
         - movie_info: Information about a movie vertex stored in a tuple containing (year, votes, rating)
 
     Representation Invariants:
