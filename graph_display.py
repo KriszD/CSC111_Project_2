@@ -25,11 +25,6 @@ MOVIE_COLOUR = 'rgb(89, 205, 105)'
 def compute_layout_and_scaling(g: nx.Graph, layout: str) -> tuple[dict[any, tuple], float, tuple[float, float]]:
     """
     Computes node positions using the given layout and calculates scaling factors and buffer margins.
-
-    Returns:
-        pos: Dictionary of node positions.
-        scale: Scaling factor based on node spread.
-        buffers: Tuple of (buffer_x, buffer_y) for x and y-axis.
     """
     # Compute positions using the chosen layout algorithm
     pos = getattr(nx, layout)(g)
@@ -53,9 +48,6 @@ def compute_layout_and_scaling(g: nx.Graph, layout: str) -> tuple[dict[any, tupl
 def compute_scaled_parameters(scale: float) -> dict[str, float]:
     """
     Computes scaled parameters for node sizes, fonts, and edge widths.
-
-    Returns:
-        A dictionary with keys 'node_size', 'node_font_size', 'edge_font_size', and 'edge_width'.
     """
     base_node_size = 50
     base_node_font = 50
@@ -225,13 +217,6 @@ def visualize_actor_path(graph: Graph, path: list[str], fallback_actors: tuple[s
     Visualizes a path of actors (and the movies connecting them) using Plotly.
 
     If the provided path is empty, the function will display only the two fallback actors as nodes.
-
-    Parameters:
-        graph: The custom graph (an instance of Graph from graph_entities).
-        path: A list of actor names representing the path.
-        fallback_actors: A tuple containing the two actor names to display when path is empty.
-        layout: The NetworkX layout algorithm to use (e.g., 'spring_layout').
-        output_file: If provided, the Plotly figure is saved to this file; otherwise, it is displayed.
     """
     # Determine the effective path and whether fallback actors were used
     path, used_fallback = get_effective_path(path, fallback_actors)
@@ -263,8 +248,6 @@ def visualize_actor_path(graph: Graph, path: list[str], fallback_actors: tuple[s
 
 def add_movie_node(graph_nx: nx.Graph, vertex: any, max_vertices: int) -> None:
     """Add a movie node to graph_nx if it's not already present, and we haven't exceeded max_vertices.
-
-    vertex is a _Vertex object with attributes item, kind, and optionally sim_score.
     """
     if graph_nx.number_of_nodes() < max_vertices and vertex.item not in graph_nx.nodes:
         graph_nx.add_node(vertex.item,
@@ -294,10 +277,6 @@ def movie_graph_to_networkx(movie_graph: Graph, max_vertices: int = 5000) -> nx.
     """
     Convert a custom movie graph (an instance of Graph) into a NetworkX graph.
     Only includes up to max_vertices nodes.
-
-    This function assumes that movie_graph._vertices is a dictionary where each value
-    is a _Vertex object that has attributes such as item (movie name), kind, and optionally
-    sim_score (set by add_sim_score). The main movie should have a sim_score of 1.
     """
     graph_nx = nx.Graph()
     for v in movie_graph.get_vertices().values():
@@ -320,15 +299,7 @@ def create_node_trace_movie_graph(graph_nx: nx.Graph, pos: dict[any, tuple], bas
         -> Scatter:
     """
     Extracts node positions and labels, computes node sizes based on similarity scores,
-    and returns a Plotly scatter trace for nodes.
-
-    Parameters:
-        graph_nx: A NetworkX graph.
-        pos: Dictionary with node positions.
-        base_main_size: Base size for the main movie node (default 30).
-
-    Returns:
-        A Plotly Scatter trace for nodes.
+    and returns a Plotly scatter trace for nodes for the movie graph.
     """
     # Extract node positions and labels.
     x_values = [pos[n][0] for n in graph_nx.nodes]
@@ -363,15 +334,7 @@ def create_node_trace_movie_graph(graph_nx: nx.Graph, pos: dict[any, tuple], bas
 def create_edge_label_movie_graph(graph_nx: nx.Graph, pos: dict[any, tuple], font_size: int = 15)\
         -> Scatter:
     """
-    Creates a Plotly scatter trace for edge labels representing similarity scores.
-
-    Parameters:
-        graph_nx: A NetworkX graph.
-        pos: Dictionary of node positions.
-        font_size: The font size for the edge labels (default is 15).
-
-    Returns:
-        A Plotly Scatter trace for edge labels.
+    Creates a Plotly scatter trace for edge labels representing similarity scores for the movie graph.
     """
     edge_label_x = []
     edge_label_y = []
@@ -397,14 +360,7 @@ def create_edge_label_movie_graph(graph_nx: nx.Graph, pos: dict[any, tuple], fon
 def visualize_movie_graph(movie_graph: Graph, layout: str = 'spring_layout',
                           max_vertices: int = 5000, output_file: str = '') -> None:
     """
-    Visualizes the custom movie graph using Plotly.
-    Each node's size is determined by a fixed base size multiplied by its similarity score.
-
-    Parameters:
-        movie_graph: A custom Graph object for movies (as returned by create_recommended_movie_graph).
-        layout: Which NetworkX layout algorithm to use (default 'spring_layout').
-        max_vertices: Maximum number of vertices to include in the visualization.
-        output_file: If provided, the Plotly figure is saved to this file; otherwise, it is displayed.
+    Visualizes the recommended movie graph using Plotly.
     """
     # Convert the custom movie graph to a NetworkX graph.
     graph_nx = movie_graph_to_networkx(movie_graph, max_vertices)
