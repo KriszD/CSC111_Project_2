@@ -10,11 +10,11 @@ import calculations
 
 
 if __name__ == '__main__':
-    # python_ta.check_all(config={
-    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
-    #     'allowed-io': [],
-    #     'max-line-length': 120
-    # })
+    python_ta.check_all(config={
+        'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
+        'allowed-io': [],
+        'max-line-length': 120
+    })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
@@ -70,11 +70,11 @@ if __name__ == '__main__':
                                        " want it to be filtered. ")).strip()
             if filter_key != 'NO':
                 lower_threshold = input("Lower bound for filtering: ").strip()
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(lower_threshold):
                     print("Invalid Choice, try Again")
                     lower_threshold = input("Lower bound for filtering: ").strip()
                 upper_threshold = input("Upper bound for filtering: ")
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(lower_threshold):
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
                 num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
@@ -118,11 +118,11 @@ if __name__ == '__main__':
                                        " want it to be filtered. ")).strip()
             if filter_key != 'NO':
                 lower_threshold = input("Lower bound for filtering: ").strip()
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(lower_threshold):
                     print("Invalid Choice, try Again")
                     lower_threshold = input("Lower bound for filtering: ").strip()
                 upper_threshold = input("Upper bound for filtering: ")
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(lower_threshold):
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
                 rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit),

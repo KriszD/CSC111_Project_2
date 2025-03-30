@@ -245,6 +245,30 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
         raise KeyError
 
 
+#######################################################################################################################
+# Movie Similarity
+#######################################################################################################################
+
+def is_float(s: str) -> bool:
+    """Return whether a given string represents a float data type. This includes integers as well.
+
+    >>> a = '1'
+    >>> b = '1.5'
+    >>> c = 'banana'
+    >>> is_float(a)
+    True
+    >>> is_float(b)
+    True
+    >>> is_float(c)
+    False
+    """
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 if __name__ == '__main__':
     python_ta.check_all(config={
         'extra-imports': ['graph_entities', 'graph_create'],
