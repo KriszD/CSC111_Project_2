@@ -31,7 +31,7 @@ class _Vertex:
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
 
-        This vertex is initialized with no neighbours.
+        This vertex is initialized with no neighbours. The rest of its information is added in graph_create functions.
 
         Preconditions:
             - kind in {'actor', 'movie'}
