@@ -118,15 +118,6 @@ def create_dict_from_csv(dataset: str) -> dict[str, float]:
 if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=False)
-
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'disable': ['R1705', 'E9998', 'E9999']
-    # })
-
-
-if __name__ == '__main__':
     python_ta.check_all(config={
         'extra-imports': ['graph_entities', 'csv'],
         'allowed-io': ['load_csv_file', 'create_dict_from_csv'],
