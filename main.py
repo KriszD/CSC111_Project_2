@@ -51,6 +51,7 @@ if __name__ == '__main__':
             while not actor_graph.item_in_graph(actor_name):
                 if actor_name == 'RANDOM':
                     actor_name = actor_graph.get_random_item()
+                    print("You chose: ", actor_name)
                 else:
                     print("Actor not in dataset. Try again.")
                     actor_name = str(input("Actor Name: ").strip())
@@ -64,6 +65,7 @@ if __name__ == '__main__':
             while not actor_graph.item_in_graph(actor1_name):
                 if actor1_name == 'RANDOM':
                     actor1_name = actor_graph.get_random_item()
+                    print("You chose: ", actor1_name)
                 else:
                     print("Actor not in dataset. Try again.")
                     actor1_name = str(input("Actor 1 Name (or type RANDOM): ").strip())
@@ -71,6 +73,7 @@ if __name__ == '__main__':
             while not actor_graph.item_in_graph(actor2_name):
                 if actor2_name == 'RANDOM':
                     actor2_name = actor_graph.get_random_item()
+                    print("You chose: ", actor2_name)
                 else:
                     print("Actor not in dataset. Try again.")
                     actor2_name = str(input("Actor 2 Name (or type RANDOM): ").strip())
@@ -118,6 +121,7 @@ if __name__ == '__main__':
             while movie_name not in movie_dict:
                 if movie_name == 'RANDOM':
                     movie_name = calculations.get_random_key(movie_dict)
+                    print("You chose: ", movie_name)
                 else:
                     print("Movie not in dataset, try again.")
                     movie_name = str(input("Movie Name: ").strip())
