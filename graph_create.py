@@ -87,7 +87,8 @@ def create_recommended_movie_graph(main_movie: str, recommendations: list | dict
         recommendations = list(recommendations.keys())
 
     graph.add_vertex(main_movie, 'movie')
-    graph.add_sim_score(main_movie, 1)
+    main_sim_score = {main_movie: 1}
+    graph.add_sim_score(main_movie, main_sim_score)
 
     for movie in recommendations:
         graph.add_vertex(movie, 'movie')

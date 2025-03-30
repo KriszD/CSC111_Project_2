@@ -41,7 +41,7 @@ def bacon_path(graph: Graph, actors: tuple[str, str], movies: dict = None, key: 
 
     if key in {'rating', 'release date'}:
         lower, upper = thresholds[0], thresholds[1]
-        path = graph.shortest_path_bfs_filtered(actor1, actor2, key, lower, upper, movies)
+        path = graph.shortest_path_bfs_filtered((actor1, actor2), key, (lower, upper), movies)
         path_with_movies = []
 
     for i in range(len(path) - 1):
