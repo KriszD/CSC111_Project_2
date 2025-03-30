@@ -286,7 +286,8 @@ class Graph:
 
         return []
 
-    def _sp_bfs_filtered_helper(self, is_valid: bool, visited: set, item: Any,
+    @staticmethod
+    def _sp_bfs_filtered_helper(is_valid: bool, visited: set, item: Any,
                                 queue_path: tuple[deque, list[str]]) -> None:
         """A helper function for shortest_path_bfs_filtered
         If is valid_is True, adds item to visited and appends (item, path + [item]) to queue."""
