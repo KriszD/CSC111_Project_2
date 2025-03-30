@@ -285,7 +285,8 @@ class Graph:
             for neighbor in self.get_neighbours(current):
                 if neighbor in movies:  # If it's a movie
                     movie_data = movies[neighbor][1]  # Get movie info [year, votes, rating]
-                    if lower <= float(movie_data[2]) <= upper:  # Check rating filter
+                    key_index = 0 if key == 'year' else 2
+                    if lower <= float(movie_data[key_index]) <= upper:  # Check rating filter
                         for actor in self.get_neighbours(neighbor):
                             if actor not in visited:
                                 queue.append(path + [neighbor, actor])
