@@ -74,7 +74,7 @@ if __name__ == '__main__':
                     print("Invalid Choice, try Again")
                     lower_threshold = input("Lower bound for filtering: ").strip()
                 upper_threshold = input("Upper bound for filtering: ")
-                while not calculations.is_float(lower_threshold):
+                while not calculations.is_float(upper_threshold):
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
                 num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
@@ -122,7 +122,7 @@ if __name__ == '__main__':
                     print("Invalid Choice, try Again")
                     lower_threshold = input("Lower bound for filtering: ").strip()
                 upper_threshold = input("Upper bound for filtering: ")
-                while not calculations.is_float(lower_threshold):
+                while not calculations.is_float(upper_threshold):
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
                 rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit),
