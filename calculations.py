@@ -3,6 +3,7 @@ from typing import Any
 
 import python_ta
 from graph_entities import Graph
+from random import choice
 
 
 #######################################################################################################################
@@ -267,6 +268,18 @@ def is_float(s: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+def get_random_key(dictionary: dict) -> Any:
+    """Returns a random key from the given dictionary
+    >>> d = {'a': 1, 'b': 2, 'c': 3}
+    >>> rand = get_random_key(d)
+    >>> rand in {'a', 'b', 'c'}
+    True
+    """
+    dict_copy = set(dictionary.keys())
+    dict_copy_tup = tuple(dict_copy)
+    return choice(dict_copy_tup)
 
 
 if __name__ == '__main__':

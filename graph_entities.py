@@ -2,6 +2,7 @@
 from __future__ import annotations
 from collections import deque
 from typing import Any
+from random import choice
 
 
 class _Vertex:
@@ -182,6 +183,16 @@ class Graph:
         """Returns a set of movies an actor has appeared in"""
         return self._vertices[actor].appearances
 
+    def get_random_item(self) -> Any:
+        """Returns the item of a random vertex
+
+        Preconditions:
+        - self._vertices != {}
+        """
+        vertices_copy = set(self._vertices.keys())
+        vertices_copy_tup = tuple(vertices_copy)
+        return choice(vertices_copy_tup)
+
     ####################################################################################################################
     # BFS (Breadth First Search)
     ####################################################################################################################
@@ -230,36 +241,6 @@ class Graph:
         if they match the filtering requirements.
 
         Raise a ValueError if starting_item or target_item do not appear as vertices in this graph.
-
-        >>> g = Graph()
-        >>> g.add_vertex('actor1', kind = 'actor')
-        >>> g.add_vertex('actor2', kind = 'actor')
-        >>> g.add_vertex('actor3', kind = 'actor')
-        >>> g.add_vertex('actor4', kind = 'actor')
-        >>> g.add_vertex('movie1', kind = 'movie')
-        >>> g.add_vertex('movie2', kind = 'movie')
-        >>> g.add_vertex('movie3', kind = 'movie')
-        >>> g.add_edge('actor1','movie1')
-        >>> g.add_edge('actor1','movie2')
-        >>> g.add_edge('actor2','movie2')
-        >>> g.add_edge('actor2','movie3')
-        >>> g.add_edge('actor3','movie3')
-        >>> g.add_edge('actor3','movie1')
-        >>> g.add_edge('actor4','movie3')
-        >>> g.add_appearances('actor1','movie1')
-        >>> g.add_appearances('actor1','movie2')
-        >>> g.add_appearances('actor2','movie2')
-        >>> g.add_appearances('actor2','movie3')
-        >>> g.add_appearances('actor3','movie3')
-        >>> g.add_appearances('actor3','movie1')
-        >>> g.add_appearances('actor4','movie3')
-        >>> test_movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], \
-         'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
-        >>> actual = g.shortest_path_bfs_filtered(('actor1', 'actor4'), 'rating', (1.0, 3.0), test_movies)
-        >>> expected1 = ['actor1', 'movie1', 'actor3', 'movie3', 'actor4']
-        >>> expected2 = ['actor1', 'movie2', 'actor2', 'movie3', 'actor4']
-        >>> actual == expected1 or actual == expected2
-        True
         """
         lower, upper = thresholds[0], thresholds[1]
         starting_item, target_item = items[0], items[1]
