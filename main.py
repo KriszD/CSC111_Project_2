@@ -18,7 +18,6 @@ if __name__ == '__main__':
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
-    average_bacon_numbers_no_zeroes = {actor: score for actor, score in average_bacon_numbers.items() if score != 0}
 
     # the meaningful numbers based on OUR dataset.
     average_bacon_numbers_meaningful = {actor: score for actor, score in average_bacon_numbers.items() if score > 1.5}
@@ -41,7 +40,7 @@ if __name__ == '__main__':
             while not actor_limit.isnumeric():
                 print("Invalid Choice, try Again")
                 actor_limit = input("Number of actors: ").strip()
-            calculations.ranking(average_bacon_numbers, int(actor_limit))
+            calculations.ranking(average_bacon_numbers_meaningful, int(actor_limit))
 
         if choice == '2':
             actor_name = str(input("Actor Name: ")).strip()
@@ -50,8 +49,8 @@ if __name__ == '__main__':
                 actor_name = str(input("Actor Name: ").strip())
             print("The Average Bacon Number for", actor_name, "is:", calculations.average_bacon_number(actor_graph,
                                                                                                        actor_name))
-            print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor_name) + 1, "out of",
-                  len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
+            print("The actor is number", list(average_bacon_numbers_meaningful.keys()).index(actor_name) + 1, "out of",
+                  len(average_bacon_numbers_meaningful), "in the overall rankings.")
 
         if choice == '3':
             actor1_name = str(input("Actor 1 Name: ")).strip()
