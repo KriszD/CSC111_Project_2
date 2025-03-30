@@ -12,7 +12,7 @@ import calculations
 if __name__ == '__main__':
     # python_ta.check_all(config={
     #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
-    #     'allowed-io': ['print_bacon_path', 'ranking'],
+    #     'allowed-io': [],
     #     'max-line-length': 120
     # })
 
@@ -77,27 +77,27 @@ if __name__ == '__main__':
                 while not lower_threshold.isnumeric():
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
-                num = calculations.bacon_number(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
-                                                float(lower_threshold), float(upper_threshold))
+                num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
+                                                (float(lower_threshold), float(upper_threshold)))
                 if num < 0:
                     print("These actors share no path.")
                 else:
                     print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
-                    calculations.print_bacon_path(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
-                                                  float(lower_threshold), float(upper_threshold))
-                actor_path, _ = calculations.bacon_path(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
-                                                        float(lower_threshold), float(upper_threshold))
+                    calculations.print_bacon_path(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
+                                                  (float(lower_threshold), float(upper_threshold)))
+                actor_path, _ = calculations.bacon_path(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
+                                                        (float(lower_threshold), float(upper_threshold)))
 
             else:
-                num = calculations.bacon_number(actor_graph, actor1_name, actor2_name, movie_dict)
+                num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict)
                 if num < 0:
                     print("These actors share no path.")
                 else:
                     print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
-                    calculations.print_bacon_path(actor_graph, actor1_name, actor2_name, movie_dict)
-                actor_path, _ = calculations.bacon_path(actor_graph, actor1_name, actor2_name)
+                    calculations.print_bacon_path(actor_graph, (actor1_name, actor2_name), movie_dict)
+                actor_path, _ = calculations.bacon_path(actor_graph, (actor1_name, actor2_name))
 
             graph_display.visualize_actor_path(actor_graph, actor_path, (actor1_name, actor2_name))
 
@@ -126,8 +126,8 @@ if __name__ == '__main__':
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
                 rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit),
-                                                                          filter_key, float(lower_threshold),
-                                                                          float(upper_threshold))
+                                                                          filter_key, (float(lower_threshold),
+                                                                          float(upper_threshold)))
                 print("Recommended Movies: ", rec_result)
 
             else:
