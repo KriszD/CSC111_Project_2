@@ -1,7 +1,7 @@
 """All the calculations that are performed for our project."""
 from typing import Any
 
-import graph_create
+import python_ta
 from graph_entities import Graph
 
 
@@ -19,6 +19,7 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key:
     Preconditions:
         - key in {'rating', 'release date'} or key == ''
         - movies == None and lower == 0 and upper == 0 or key != ''
+    >>> import graph_create
     >>> bp_graph, movies_dict = graph_create.initialize_graphs('datasets/full_dataset.csv')
     >>> bp = bacon_path(bp_graph, 'Fred Astaire', 'Dwayne Johnson')[0]
     >>> len(bp) == 3
@@ -111,6 +112,7 @@ def average_bacon_number(graph: Graph, actor: str) -> float:
 
     Preconditions:
     - actor in graph.get_all_vertices('actor')
+    >>> import graph_create
     >>> avg_bn_graph = graph_create.initialize_graphs('datasets/full_dataset.csv')[0]
     >>> average_bacon_number(avg_bn_graph, 'Fred Astaire')
     2.4230608404766882
@@ -171,7 +173,7 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     return len(sim_intersection) / len(sim_union)
 
 
-def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '', lower: float = 0, upper: float = 0)\
+def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '', lower: float = 0, upper: float = 0) \
         -> (tuple[dict[Any, Any], dict[str, float]] | tuple[list[Any], dict[str, float]]):
     """Get movie recommendations given an input movie using the similarity score algorithm
     (intersection of cast / union of cast).
@@ -230,3 +232,11 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
         return lower <= float(movies[input_movie][1][0]) <= upper
     else:
         raise KeyError
+
+
+if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': ['graph_entities', 'graph_create'],
+        'allowed-io': ['print_bacon_path', 'ranking'],
+        'max-line-length': 120
+    })
