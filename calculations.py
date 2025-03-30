@@ -1,7 +1,7 @@
 """All the calculations that are performed for our project."""
 from typing import Any
 
-import graph_create
+import python_ta
 from graph_entities import Graph
 
 
@@ -9,8 +9,8 @@ from graph_entities import Graph
 # Bacon Number
 #######################################################################################################################
 
-def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key: str = '',
-               lower: float = 0, upper: float = 0) -> tuple[list, list]:
+def bacon_path(graph: Graph, actors: tuple[str, str], movies: dict = None, key: str = '',
+               thresholds: tuple[float, float] = (0, 0)) -> tuple[list, list]:
     """Given the names of two actors, find the shortest path between in a graph them.
 
     If not given parameters for filtering, do it using the default method. Otherwise, use the filtering parameters to
@@ -19,8 +19,9 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key:
     Preconditions:
         - key in {'rating', 'release date'} or key == ''
         - movies == None and lower == 0 and upper == 0 or key != ''
+    >>> import graph_create
     >>> bp_graph, movies_dict = graph_create.initialize_graphs('datasets/full_dataset.csv')
-    >>> bp = bacon_path(bp_graph, 'Fred Astaire', 'Dwayne Johnson')[0]
+    >>> bp = bacon_path(bp_graph, ('Fred Astaire', 'Dwayne Johnson'))[0]
     >>> len(bp) == 3
     True
     >>> bp[0] == 'Fred Astaire' and bp[2] == 'Dwayne Johnson'
@@ -28,16 +29,19 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key:
     """
     if movies is None:
         movies = {}
-    actors = graph.get_all_vertices('actor')
+    other_actors = graph.get_all_vertices('actor')
 
-    if actor1 not in actors or actor2 not in actors:
+    actor1, actor2 = actors[0], actors[1]
+
+    if actor1 not in other_actors or actor2 not in other_actors:
         raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
 
     path = graph.shortest_path_bfs(actor1, actor2)
     path_with_movies = []
 
     if key in {'rating', 'release date'}:
-        path = graph.shortest_path_bfs_filtered(actor1, actor2, key, lower, upper, movies)
+        lower, upper = thresholds[0], thresholds[1]
+        path = graph.shortest_path_bfs_filtered((actor1, actor2), key, (lower, upper), movies)
         path_with_movies = []
 
     for i in range(len(path) - 1):
@@ -53,20 +57,23 @@ def bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key:
     return path, path_with_movies
 
 
-def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None, key: str = '',
-                     lower: float = 0, upper: float = 0) -> None:
+def print_bacon_path(graph: Graph, actors: tuple[str, str], movies: dict = None, key: str = '',
+                     thresholds: tuple[float, float] = (0, 0)) -> None:
     """Cleanly print out the bacon path between two actors.
 
     Note: the filtering parameters are passed in case the function bacon_path needs them, since this function
     relies on bacon_path."""
     if movies is None:
         movies = {}
-    actors = graph.get_all_vertices('actor')
+    other_actors = graph.get_all_vertices('actor')
 
-    if actor1 not in actors or actor2 not in actors:
+    actor1, actor2 = actors[0], actors[1]
+
+    if actor1 not in other_actors or actor2 not in other_actors:
         raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
 
-    _, path = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
+    lower, upper = thresholds[0], thresholds[1]
+    _, path = bacon_path(graph, (actor1, actor2), movies, key, (lower, upper))
 
     formatted_path = []
 
@@ -79,8 +86,8 @@ def print_bacon_path(graph: Graph, actor1: str, actor2: str, movies: dict = None
     print(" -->> ".join(formatted_path))
 
 
-def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict = None, key: str = '',
-                 lower: float = 0, upper: float = 0) -> int:
+def bacon_number(graph: Graph, actors: tuple[str, str], movies: dict = None, key: str = '',
+                 thresholds: tuple[float, float] = (0, 0)) -> int:
     """Given the name of two actors, calculate their bacon number (the shortest path between them).
 
     >>> g = Graph()
@@ -89,19 +96,22 @@ def bacon_number(graph: Graph, actor1: str, actor2: str, movies: dict = None, ke
     >>> g.add_vertex('Dwayne Johnson', 'actor')
     >>> g.add_edge('Kevin Bacon', 'John Cena')
     >>> g.add_edge('John Cena', 'Dwayne Johnson')
-    >>> bacon_number(g, 'Kevin Bacon', 'Kevin Bacon')
+    >>> bacon_number(g, ('Kevin Bacon', 'Kevin Bacon'))
     0
-    >>> bacon_number(g, 'Kevin Bacon', 'Dwayne Johnson')
+    >>> bacon_number(g, ('Kevin Bacon', 'Dwayne Johnson'))
     2
     """
     if movies is None:
         movies = {}
-    actors = graph.get_all_vertices('actor')
+    other_actors = graph.get_all_vertices('actor')
 
-    if actor1 not in actors or actor2 not in actors:
+    actor1, actor2 = actors[0], actors[1]
+
+    if actor1 not in other_actors or actor2 not in other_actors:
         raise ValueError("At least one of these is not a valid name OR is not in our dataset.")
 
-    path, _ = bacon_path(graph, actor1, actor2, movies, key, lower, upper)
+    lower, upper = thresholds[0], thresholds[1]
+    path, _ = bacon_path(graph, (actor1, actor2), movies, key, (lower, upper))
     return len(path) - 1
 
 
@@ -111,6 +121,7 @@ def average_bacon_number(graph: Graph, actor: str) -> float:
 
     Preconditions:
     - actor in graph.get_all_vertices('actor')
+    >>> import graph_create
     >>> avg_bn_graph = graph_create.initialize_graphs('datasets/full_dataset.csv')[0]
     >>> average_bacon_number(avg_bn_graph, 'Fred Astaire')
     2.4230608404766882
@@ -171,7 +182,8 @@ def get_similarity_score_dict(movies: dict, movie1: str, movie2: str) -> float:
     return len(sim_intersection) / len(sim_union)
 
 
-def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '', lower: float = 0, upper: float = 0)\
+def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '',
+                        thresholds: tuple[float, float] = (0, 0)) \
         -> (tuple[dict[Any, Any], dict[str, float]] | tuple[list[Any], dict[str, float]]):
     """Get movie recommendations given an input movie using the similarity score algorithm
     (intersection of cast / union of cast).
@@ -196,6 +208,7 @@ def get_recommendations(movies: dict, input_movie: Any, limit: int, key: str = '
     if key in {'rating', 'release date'}:
         for movie in movies:
             sim_score = get_similarity_score_dict(movies, input_movie, movie)
+            lower, upper = thresholds[0], thresholds[1]
             if movie != input_movie and similarity_filter(movies, movie, key, lower, upper) and sim_score > 0:
                 recommendations[movie] = sim_score
 
@@ -230,3 +243,35 @@ def similarity_filter(movies: dict, input_movie: str, key: str, lower: float, up
         return lower <= float(movies[input_movie][1][0]) <= upper
     else:
         raise KeyError
+
+
+#######################################################################################################################
+# Extra Functions
+#######################################################################################################################
+
+def is_float(s: str) -> bool:
+    """Return whether a given string represents a float data type. This includes integers as well.
+
+    >>> a = '1'
+    >>> b = '1.5'
+    >>> c = 'banana'
+    >>> is_float(a)
+    True
+    >>> is_float(b)
+    True
+    >>> is_float(c)
+    False
+    """
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+if __name__ == '__main__':
+    python_ta.check_all(config={
+        'extra-imports': ['graph_entities', 'graph_create'],
+        'allowed-io': ['print_bacon_path', 'ranking'],
+        'max-line-length': 120
+    })

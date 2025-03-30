@@ -435,6 +435,8 @@ def visualize_movie_graph(movie_graph: Graph, layout: str = 'spring_layout',
 
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
     python_ta.check_all(config={
         'extra-imports': ['networkx', 'plotly.graph_objs', 'graph_entities'],  # the names (strs) of imported modules
         'allowed-io': ['visualize_actor_path'],  # the names (strs) of functions that call print/open/input

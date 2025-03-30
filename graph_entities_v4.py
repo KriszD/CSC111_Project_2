@@ -5,7 +5,7 @@ from typing import Any
 
 
 class _Vertex:
-    """A vertex in a actor/movie graph, where each vertex item is either an actor or movie.
+    """A vertex in an actor/movie graph, where each vertex item is either an actor or movie.
 
     Instance Attributes:
         - item: The data stored in this vertex, representing an actor or movie.
@@ -13,6 +13,7 @@ class _Vertex:
         - neighbours: The vertices that are adjacent to this vertex.
         - appearances: The movies an actor appears in (for the actor vertices)
         - cast_members: The actors that appear in a movie (for the movie vertices)
+        - sim_score: The similarity of the item of a movie vertex to an input movie.
         - movie_info: Information about a movie vertex stored in a tuple containing (year, votes, rating)
 
     Representation Invariants:
@@ -31,7 +32,7 @@ class _Vertex:
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
 
-        This vertex is initialized with no neighbours.
+        This vertex is initialized with no neighbours. The rest of its information is added in graph_create functions.
 
         Preconditions:
             - kind in {'actor', 'movie'}
@@ -166,9 +167,9 @@ class Graph:
         >>> g.add_appearance('actor2','movie3')
         >>> g.add_appearance('actor2','movie2')
         >>> g.add_appearance('actor2','movie1')
-        >>> actural = g.get_common_movies('actor1','actor2')
+        >>> actual = g.get_common_movies('actor1','actor2')
         >>> expected = {'movie2','movie1'}
-        >>> actural == expected
+        >>> actual == expected
         True
         """
         if item1 in self._vertices and item2 in self._vertices:
@@ -200,9 +201,9 @@ class Graph:
         >>> g.add_edge('actor2','movie3')
         >>> g.add_edge('actor3','movie3')
         >>> g.add_edge('actor3','movie1')
-        >>> actural = g.shortest_path_bfs('actor1','actor3')
+        >>> actual = g.shortest_path_bfs('actor1','actor3')
         >>> expected = ['actor1','movie1','actor3']
-        >>> actural == expected
+        >>> actual == expected
         True
         """
         if starting_item not in self._vertices or target_item not in self._vertices:
@@ -253,11 +254,12 @@ class Graph:
         >>> g.add_appearance('actor3','movie3')
         >>> g.add_appearance('actor3','movie1')
         >>> g.add_appearance('actor4','movie3')
-        >>> movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], 'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
-        >>> actural = g.shortest_path_bfs_filtered('actor1', 'actor4', 'rating', 1.0, 3.0, movies)
+        >>> test_movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], \
+         'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
+        >>> actual = g.shortest_path_bfs_filtered('actor1', 'actor4', 'rating', 1.0, 3.0, test_movies)
         >>> expected1 = ['actor1', 'movie1', 'actor3', 'movie3', 'actor4']
         >>> expected2 = ['actor1', 'movie2', 'actor2', 'movie3', 'actor4']
-        >>> actural == expected1 or actural == expected2
+        >>> actual == expected1 or actual == expected2
         True
 
         """
@@ -283,7 +285,8 @@ class Graph:
             for neighbor in self.get_neighbours(current):
                 if neighbor in movies:  # If it's a movie
                     movie_data = movies[neighbor][1]  # Get movie info [year, votes, rating]
-                    if lower <= float(movie_data[2]) <= upper:  # Check rating filter
+                    key_index = 0 if key == 'year' else 2
+                    if lower <= float(movie_data[key_index]) <= upper:  # Check rating filter
                         for actor in self.get_neighbours(neighbor):
                             if actor not in visited:
                                 queue.append(path + [neighbor, actor])
@@ -310,10 +313,11 @@ class Graph:
         >>> g.add_edge('actor3','movie3')
         >>> g.add_edge('actor3','movie1')
         >>> g.add_edge('actor4','movie3')
-        >>> movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], 'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
-        >>> actural = g.shortest_distance_bfs('actor1')
+        >>> movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], 'movie3': [[], \
+         [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
+        >>> actual = g.shortest_distance_bfs('actor1')
         >>> expected = {'actor2':2, 'actor3':2, 'actor4':4, 'movie1':1, 'movie2':1, 'movie3':3}
-        >>> actural == expected
+        >>> actual == expected
         True
 
         """
@@ -371,11 +375,12 @@ class Graph:
         >>> g.add_appearance('actor3','movie3')
         >>> g.add_appearance('actor3','movie1')
         >>> g.add_appearance('actor4','movie3')
-        >>> movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], 'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
-        >>> test1 = g.filter_by_key('actor1', 'actor2', 'rating', 1985, 1991, movies)
-        >>> test2 = g.filter_by_key('actor1', 'actor2', 'year', 1965, 1991, movies)
-        >>> test3 = g.filter_by_key('actor3', 'actor4', 'rating', 2.0, 3, movies)
-        >>> test4 = g.filter_by_key('actor1', 'actor3', 'rating', 2.5, 3, movies)
+        >>> test_movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], \
+         'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
+        >>> test1 = g.filter_by_key('actor1', 'actor2', 'rating', 1985, 1991, test_movies)
+        >>> test2 = g.filter_by_key('actor1', 'actor2', 'year', 1965, 1991, test_movies)
+        >>> test3 = g.filter_by_key('actor3', 'actor4', 'rating', 2.0, 3, test_movies)
+        >>> test4 = g.filter_by_key('actor1', 'actor3', 'rating', 2.5, 3, test_movies)
         >>> test1 == (False, set())
         True
         >>> test2 == (True, {'movie2'})

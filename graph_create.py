@@ -43,7 +43,7 @@ def create_actor_graph(movies: dict) -> Graph:
     >>> actor1_neighbours = actor_graph.get_neighbours('actor1')
     >>> 'actor2' in actor1_neighbours and 'actor2' in actor1_neighbours
     True
-    >>> actor1_appearances = actor_graph.get_appearences('actor1')
+    >>> actor1_appearances = actor_graph.get_appearances('actor1')
     >>> 'Movie1' in actor1_appearances and 'Movie2' in actor1_appearances
     True
     """
@@ -52,12 +52,19 @@ def create_actor_graph(movies: dict) -> Graph:
     for movie in movies:
         for actor in movies[movie][0]:
             graph.add_vertex(actor, 'actor')
-            graph.add_appearences(actor, movie)
-            for actor2 in movies[movie][0]:
-                if graph.item_in_graph(actor2) and actor != actor2:
-                    graph.add_edge(actor, actor2)
+            graph.add_appearances(actor, movie)
+            _create_actor_graph_helper(movies, movie, graph, actor)
 
     return graph
+
+
+def _create_actor_graph_helper(movies: dict, movie: str, graph: Graph(), actor: str) -> None:
+    """A helper function for create_actor_graph
+    Adds edges between actor and actors in movies if the actors appear in the graph.
+    """
+    for actor2 in movies[movie][0]:
+        if graph.item_in_graph(actor2) and actor != actor2:
+            graph.add_edge(actor, actor2)
 
 
 def create_recommended_movie_graph(main_movie: str, recommendations: list | dict, sim_scores: dict) -> Graph():
@@ -80,18 +87,14 @@ def create_recommended_movie_graph(main_movie: str, recommendations: list | dict
         recommendations = list(recommendations.keys())
 
     graph.add_vertex(main_movie, 'movie')
-    graph.add_sim_score(main_movie, 1)
+    main_sim_score = {main_movie: 1}
+    graph.add_sim_score(main_movie, main_sim_score)
 
     for movie in recommendations:
         graph.add_vertex(movie, 'movie')
         graph.add_sim_score(movie, sim_scores)
         graph.add_edge(movie, main_movie)
 
-    # for i in range(len(recommendations)):
-    #     graph.add_vertex(recommendations[i], 'movie')
-    #     graph.add_movie_info(recommendations[i], movies[recommendations[i]][0], movies[recommendations[i]][1])
-    #     for j in range(0, i):
-    #         graph.add_edge(recommendations[i], recommendations[j])
     return graph
 
 
@@ -119,14 +122,6 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod(verbose=False)
 
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'disable': ['R1705', 'E9998', 'E9999']
-    # })
-
-
-if __name__ == '__main__':
     python_ta.check_all(config={
         'extra-imports': ['graph_entities', 'csv'],
         'allowed-io': ['load_csv_file', 'create_dict_from_csv'],

@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections import deque
 from typing import Any
 
-import python_ta
-
 
 class _Vertex:
     """A vertex in a book review graph, used to represent a user or a book.
@@ -15,16 +13,21 @@ class _Vertex:
         - item: The data stored in this vertex, representing an actor or movie.
         - kind: The type of this vertex: 'actor' or 'movie'.
         - neighbours: The vertices that are adjacent to this vertex.
+        - appearances: The set of movies this actor appears in (if kind == 'actor')
+        - sim_score: How similar the movie is to a certain movie in the graph, determined by the
+        similarity score algorithm (if kind == 'movie')
+        - movie_info: A tuple storing a movie's release year, number of votes, and rating
 
     Representation Invariants:
         - self not in self.neighbours
         - all(self in u.neighbours for u in self.neighbours)
         - self.kind in {'movie', 'actor'}
+        - self.sim_score <= 1
     """
     item: Any
     kind: str
     neighbours: set[_Vertex]
-    appearences: set[str]
+    appearances: set[str]
     sim_score: float
     movie_info: tuple[int, int, float]  # (year, votes, rating)
 
@@ -40,8 +43,9 @@ class _Vertex:
         self.item = item
         self.kind = kind
         self.neighbours = set()
-        self.appearences = set()
+        self.appearances = set()
         self.sim_score = 0
+        self.movie_info = (0, 0, 0)
 
 
 class Graph:
@@ -64,7 +68,7 @@ class Graph:
         Do nothing if the given item is already in this graph.
 
         Preconditions:
-            - kind in {'user', 'book'}
+            - kind in {'actor', 'movie'}
         """
         if item not in self._vertices:
             self._vertices[item] = _Vertex(item, kind)
@@ -116,7 +120,7 @@ class Graph:
         If kind != '', only return the items of the given vertex kind.
 
         Preconditions:
-            - kind in {'', 'user', 'book'}
+            - kind in {'', 'actor', 'movie'}
         """
         if kind != '':
             return {v.item for v in self._vertices.values() if v.kind == kind}
@@ -127,27 +131,22 @@ class Graph:
         """Return the dictionary of vertices in the graph."""
         return self._vertices
 
-    def add_appearences(self, actor: str, movie: str) -> None:
+    def add_appearances(self, actor: str, movie: str) -> None:
         """Adds a movie the actor has appeared in to a set.
         Raise a ValueError if actor does not appear as a vertex in this graph."""
         if actor in self._vertices:
-            self._vertices[actor].appearences.add(movie)
+            self._vertices[actor].appearances.add(movie)
         else:
             raise ValueError
 
-    # def add_movie_info(self, movie: str, actors: set, movie_info: tuple) -> None:
-    #     """Adds cast members and movie info (year, votes, rating) to a movie
-    #     Raise a ValueError if movie does not appear as a vertex in this graph."""
-    #     if movie in self._vertices:
-    #         self._vertices[movie].cast_members.update(actors)
-    #         self._vertices[movie].movie_info = movie_info
-    #     else:
-    #         raise ValueError
+    def add_sim_score(self, movie: str, sim_scores: dict) -> None:
+        """Adds a movie's similarity score from a given dictionary.
 
-    def add_sim_score(self, movie: str, sim_score: dict | float) -> None:
-        """Adds a movie's similarity score."""
-        if isinstance(sim_score, dict):
-            sim_score = sim_score[movie]
+        Preconditions:
+        - movie in sim_scores
+        """
+
+        sim_score = sim_scores[movie]
         self._vertices[movie].sim_score = sim_score
 
     def item_in_graph(self, item: str) -> bool:
@@ -155,24 +154,57 @@ class Graph:
         return item in self._vertices
 
     def get_common_movies(self, item1: str, item2: str) -> set:
-        """Returns the movie(s) that are in common between two actors"""
+        """Returns the movie(s) that are in common between two actors
+
+        Raise a ValueError if item1 or item2 do not appear as vertices in this graph.
+
+        >>> g = Graph()
+        >>> g.add_vertex('actor1', kind = 'actor')
+        >>> g.add_vertex('actor2', kind = 'actor')
+        >>> g.add_appearances('actor1','movie1')
+        >>> g.add_appearances('actor1','movie2')
+        >>> g.add_appearances('actor2','movie3')
+        >>> g.add_appearances('actor2','movie2')
+        >>> g.add_appearances('actor2','movie1')
+        >>> actual = g.get_common_movies('actor1','actor2')
+        >>> expected = {'movie2','movie1'}
+        >>> actual == expected
+        True
+        """
         if item1 in self._vertices and item2 in self._vertices:
             v1 = self._vertices[item1]
             v2 = self._vertices[item2]
-            return v1.appearences.intersection(v2.appearences)
+            return v1.appearances.intersection(v2.appearances)
         else:
             raise ValueError
 
-    def get_appearences(self, actor: str) -> set:
+    def get_appearances(self, actor: str) -> set:
         """Returns a set of movies an actor has appeared in"""
-        return self._vertices[actor].appearences
+        return self._vertices[actor].appearances
 
     ####################################################################################################################
     # BFS (Breadth First Search)
     ####################################################################################################################
 
     def shortest_path_bfs(self, starting_item: str, target_item: str) -> str | list[Any]:
-        """Find the shortest path between two actors using BFS."""
+        """Find the shortest path between two actors using BFS.
+
+        Raise a ValueError if starting_item or target_item do not appear as vertices in this graph.
+
+        >>> g = Graph()
+        >>> g.add_vertex('actor1', kind = 'actor')
+        >>> g.add_vertex('actor2', kind = 'actor')
+        >>> g.add_vertex('actor3', kind = 'actor')
+        >>> g.add_vertex('actor4', kind = 'actor')
+        >>> g.add_edge('actor1','actor2')
+        >>> g.add_edge('actor2','actor3')
+        >>> g.add_edge('actor2','actor4')
+        >>> g.add_edge('actor3','actor4')
+        >>> actural = g.shortest_path_bfs('actor1','actor4')
+        >>> expected = ['actor1','actor2','actor4']
+        >>> actural == expected
+        True
+        """
         if starting_item not in self._vertices or target_item not in self._vertices:
             raise ValueError
 
@@ -192,12 +224,47 @@ class Graph:
 
         return []
 
-    def shortest_path_bfs_filtered(self, starting_item: str, target_item: str, key: str,
-                                   upper: float, lower: float, movies: dict) -> str | list[Any]:
+    def shortest_path_bfs_filtered(self, items: tuple[str, str], key: str,
+                                   thresholds: tuple[float, float], movies: dict) -> str | list[Any]:
         """Find the shortest path between two actors using BFS where actors can only be included in the path
-        if they match the filtering requirements."""
+        if they match the filtering requirements.
+
+        Raise a ValueError if starting_item or target_item do not appear as vertices in this graph.
+
+        >>> g = Graph()
+        >>> g.add_vertex('actor1', kind = 'actor')
+        >>> g.add_vertex('actor2', kind = 'actor')
+        >>> g.add_vertex('actor3', kind = 'actor')
+        >>> g.add_vertex('actor4', kind = 'actor')
+        >>> g.add_vertex('movie1', kind = 'movie')
+        >>> g.add_vertex('movie2', kind = 'movie')
+        >>> g.add_vertex('movie3', kind = 'movie')
+        >>> g.add_edge('actor1','movie1')
+        >>> g.add_edge('actor1','movie2')
+        >>> g.add_edge('actor2','movie2')
+        >>> g.add_edge('actor2','movie3')
+        >>> g.add_edge('actor3','movie3')
+        >>> g.add_edge('actor3','movie1')
+        >>> g.add_edge('actor4','movie3')
+        >>> g.add_appearances('actor1','movie1')
+        >>> g.add_appearances('actor1','movie2')
+        >>> g.add_appearances('actor2','movie2')
+        >>> g.add_appearances('actor2','movie3')
+        >>> g.add_appearances('actor3','movie3')
+        >>> g.add_appearances('actor3','movie1')
+        >>> g.add_appearances('actor4','movie3')
+        >>> test_movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], \
+         'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
+        >>> actual = g.shortest_path_bfs_filtered(('actor1', 'actor4'), 'rating', (1.0, 3.0), test_movies)
+        >>> expected1 = ['actor1', 'movie1', 'actor3', 'movie3', 'actor4']
+        >>> expected2 = ['actor1', 'movie2', 'actor2', 'movie3', 'actor4']
+        >>> actual == expected1 or actual == expected2
+        True
+        """
+        lower, upper = thresholds[0], thresholds[1]
+        starting_item, target_item = items[0], items[1]
         if starting_item not in self._vertices or target_item not in self._vertices:
-            raise ValueError
+            raise ValueError("One or both actors are not in the graph.")
 
         queue = deque([(starting_item, [starting_item])])
         visited = {starting_item}
@@ -210,15 +277,53 @@ class Graph:
 
             for neighbour in self._vertices[current_actor].neighbours:
                 if neighbour.item not in visited:
-                    is_valid, _ = self.filter_by_key(current_actor, neighbour.item, key, upper, lower, movies)
-                    if is_valid:
-                        visited.add(neighbour.item)
-                        queue.append((neighbour.item, path + [neighbour.item]))
+                    is_valid, _ = self.filter_by_key((current_actor, neighbour.item),
+                                                     key, (lower, upper), movies)
+                    self._sp_bfs_filtered_helper(is_valid, visited, neighbour.item, (queue, path))
+                    # if is_valid:
+                    #     visited.add(neighbour.item)
+                    #     queue.append((neighbour.item, path + [neighbour.item]))
 
         return []
 
+    @staticmethod
+    def _sp_bfs_filtered_helper(is_valid: bool, visited: set, item: Any,
+                                queue_path: tuple[deque, list[str]]) -> None:
+        """A helper function for shortest_path_bfs_filtered
+        If is valid_is True, adds item to visited and appends (item, path + [item]) to queue."""
+        queue = queue_path[0]
+        path = queue_path[1]
+        if is_valid:
+            visited.add(item)
+            queue.append((item, path + [item]))
+
     def shortest_distance_bfs(self, starting_item: str) -> dict[Any, float]:
-        """Compute the shortest distance from a given actor to all other actors using BFS."""
+        """Compute the shortest distance from a given actor to all other actors using BFS.
+        Raise a ValueError if starting_item does not appear as vertices in this graph.
+
+        >>> g = Graph()
+        >>> g.add_vertex('actor1', kind = 'actor')
+        >>> g.add_vertex('actor2', kind = 'actor')
+        >>> g.add_vertex('actor3', kind = 'actor')
+        >>> g.add_vertex('actor4', kind = 'actor')
+        >>> g.add_vertex('movie1', kind = 'movie')
+        >>> g.add_vertex('movie2', kind = 'movie')
+        >>> g.add_vertex('movie3', kind = 'movie')
+        >>> g.add_edge('actor1','movie1')
+        >>> g.add_edge('actor1','movie2')
+        >>> g.add_edge('actor2','movie2')
+        >>> g.add_edge('actor2','movie3')
+        >>> g.add_edge('actor3','movie3')
+        >>> g.add_edge('actor3','movie1')
+        >>> g.add_edge('actor4','movie3')
+        >>> movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], 'movie3': [[], \
+         [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
+        >>> actual = g.shortest_distance_bfs('actor1')
+        >>> expected = {'actor2':2, 'actor3':2, 'actor4':4, 'movie1':1, 'movie2':1, 'movie3':3}
+        >>> actual == expected
+        True
+
+        """
         if starting_item not in self._vertices:
             raise ValueError
 
@@ -240,25 +345,68 @@ class Graph:
         # Remove the starting actor
         return {actor: dist for actor, dist in distances.items() if actor != starting_item}
 
-    def filter_by_key(self, actor1: str, actor2: str, key: str,
-                      lower: float, upper: float, movies: dict) -> tuple[bool, set[str]] | None:
+    def filter_by_key(self, actors: tuple[str, str], key: str,
+                      thresholds: tuple[float, float], movies: dict) -> tuple[bool, set[str]] | None:
         """Checks if two actors have a movie connecting them that matches the given filter.
 
+        Raise a KeyError if key is not 'release date' or 'rating'.
+
+        Raise a ValueError if actor1 or actor2 do not appear as vertices in this graph.
+
         Preconditions:
-        - key in {'year', 'rating'}
+        - key in {'release date', 'rating'}
+
+        >>> g = Graph()
+        >>> g.add_vertex('actor1', kind = 'actor')
+        >>> g.add_vertex('actor2', kind = 'actor')
+        >>> g.add_vertex('actor3', kind = 'actor')
+        >>> g.add_vertex('actor4', kind = 'actor')
+        >>> g.add_vertex('movie1', kind = 'movie')
+        >>> g.add_vertex('movie2', kind = 'movie')
+        >>> g.add_vertex('movie3', kind = 'movie')
+        >>> g.add_edge('actor1','movie1')
+        >>> g.add_edge('actor1','movie2')
+        >>> g.add_edge('actor2','movie2')
+        >>> g.add_edge('actor2','movie3')
+        >>> g.add_edge('actor3','movie3')
+        >>> g.add_edge('actor3','movie1')
+        >>> g.add_edge('actor4','movie3')
+        >>> g.add_appearances('actor1','movie1')
+        >>> g.add_appearances('actor1','movie2')
+        >>> g.add_appearances('actor2','movie2')
+        >>> g.add_appearances('actor2','movie3')
+        >>> g.add_appearances('actor3','movie3')
+        >>> g.add_appearances('actor3','movie1')
+        >>> g.add_appearances('actor4','movie3')
+        >>> test_movies = {'movie1': [[], [1970, [], 2.0]], 'movie2': [[], [1980, [], 1.0]], \
+         'movie3': [[], [1990, [], 2.5]], 'movie4': [[], [1991, [], 3.0]]}
+        >>> test1 = g.filter_by_key(('actor1', 'actor2'), 'rating', (1985, 1991), test_movies)
+        >>> test2 = g.filter_by_key(('actor1', 'actor2'), 'release date', (1965, 1991), test_movies)
+        >>> test3 = g.filter_by_key(('actor3', 'actor4'), 'rating', (2.0, 3), test_movies)
+        >>> test4 = g.filter_by_key(('actor1', 'actor3'), 'rating', (2.5, 3), test_movies)
+        >>> test1 == (False, set())
+        True
+        >>> test2 == (True, {'movie2'})
+        True
+        >>> test3 == (True, {'movie3'})
+        True
+        >>> test4 == (False, set())
+        True
         """
+        lower, upper = thresholds[0], thresholds[1]
+        actor1, actor2 = actors[0], actors[1]
         if actor1 in self._vertices and actor2 in self._vertices:
             v1 = self._vertices[actor1]
             v2 = self._vertices[actor2]
 
-            if key == 'year':
-                common = v1.appearences.intersection(v2.appearences)
+            if key == 'release date':
+                common = v1.appearances.intersection(v2.appearances)
                 common_filtered = {movie for movie in common if lower <= float(movies[movie][1][0]) <= upper}
                 if common_filtered:
                     return True, common_filtered
 
-            if key == 'rating':
-                common = v1.appearences.intersection(v2.appearences)
+            elif key == 'rating':
+                common = v1.appearances.intersection(v2.appearances)
                 common_filtered = {movie for movie in common if lower <= float(movies[movie][1][2]) <= upper}
                 if common_filtered:
                     return True, common_filtered
@@ -273,8 +421,12 @@ class Graph:
 
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+
+    import python_ta
     python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
+        'extra-imports': ['collections'],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })

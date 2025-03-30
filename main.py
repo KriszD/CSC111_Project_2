@@ -10,15 +10,14 @@ import calculations
 
 
 if __name__ == '__main__':
-    # python_ta.check_all(config={
-    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
-    #     'allowed-io': ['print_bacon_path', 'ranking'],
-    #     'max-line-length': 120
-    # })
+    python_ta.check_all(config={
+        'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
+        'allowed-io': [],
+        'max-line-length': 120
+    })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
-    average_bacon_numbers_no_zeroes = {actor: score for actor, score in average_bacon_numbers.items() if score != 0}
 
     # the meaningful numbers based on OUR dataset.
     average_bacon_numbers_meaningful = {actor: score for actor, score in average_bacon_numbers.items() if score > 1.5}
@@ -41,7 +40,7 @@ if __name__ == '__main__':
             while not actor_limit.isnumeric():
                 print("Invalid Choice, try Again")
                 actor_limit = input("Number of actors: ").strip()
-            calculations.ranking(average_bacon_numbers, int(actor_limit))
+            calculations.ranking(average_bacon_numbers_meaningful, int(actor_limit))
 
         if choice == '2':
             actor_name = str(input("Actor Name: ")).strip()
@@ -50,8 +49,8 @@ if __name__ == '__main__':
                 actor_name = str(input("Actor Name: ").strip())
             print("The Average Bacon Number for", actor_name, "is:", calculations.average_bacon_number(actor_graph,
                                                                                                        actor_name))
-            print("The actor is number", list(average_bacon_numbers_no_zeroes.keys()).index(actor_name) + 1, "out of",
-                  len(average_bacon_numbers_no_zeroes), "in the overall rankings.")
+            print("The actor is number", list(average_bacon_numbers_meaningful.keys()).index(actor_name) + 1, "out of",
+                  len(average_bacon_numbers_meaningful), "in the overall rankings.")
 
         if choice == '3':
             actor1_name = str(input("Actor 1 Name: ")).strip()
@@ -70,34 +69,34 @@ if __name__ == '__main__':
                                        " want it to be filtered. ")).strip()
             if filter_key != 'NO':
                 lower_threshold = input("Lower bound for filtering: ").strip()
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(lower_threshold):
                     print("Invalid Choice, try Again")
                     lower_threshold = input("Lower bound for filtering: ").strip()
                 upper_threshold = input("Upper bound for filtering: ")
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(upper_threshold):
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
-                num = calculations.bacon_number(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
-                                                float(lower_threshold), float(upper_threshold))
+                num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
+                                                (float(lower_threshold), float(upper_threshold)))
                 if num < 0:
                     print("These actors share no path.")
                 else:
                     print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
-                    calculations.print_bacon_path(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
-                                                  float(lower_threshold), float(upper_threshold))
-                actor_path, _ = calculations.bacon_path(actor_graph, actor1_name, actor2_name, movie_dict, filter_key,
-                                                        float(lower_threshold), float(upper_threshold))
+                    calculations.print_bacon_path(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
+                                                  (float(lower_threshold), float(upper_threshold)))
+                actor_path, _ = calculations.bacon_path(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
+                                                        (float(lower_threshold), float(upper_threshold)))
 
             else:
-                num = calculations.bacon_number(actor_graph, actor1_name, actor2_name, movie_dict)
+                num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict)
                 if num < 0:
                     print("These actors share no path.")
                 else:
                     print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
-                    calculations.print_bacon_path(actor_graph, actor1_name, actor2_name, movie_dict)
-                actor_path, _ = calculations.bacon_path(actor_graph, actor1_name, actor2_name)
+                    calculations.print_bacon_path(actor_graph, (actor1_name, actor2_name), movie_dict)
+                actor_path, _ = calculations.bacon_path(actor_graph, (actor1_name, actor2_name))
 
             graph_display.visualize_actor_path(actor_graph, actor_path, (actor1_name, actor2_name))
 
@@ -118,16 +117,16 @@ if __name__ == '__main__':
                                        " want it to be filtered. ")).strip()
             if filter_key != 'NO':
                 lower_threshold = input("Lower bound for filtering: ").strip()
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(lower_threshold):
                     print("Invalid Choice, try Again")
                     lower_threshold = input("Lower bound for filtering: ").strip()
                 upper_threshold = input("Upper bound for filtering: ")
-                while not lower_threshold.isnumeric():
+                while not calculations.is_float(upper_threshold):
                     print("Invalid Choice, try Again")
                     upper_threshold = input("Upper bound for filtering: ").strip()
                 rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit),
-                                                                          filter_key, float(lower_threshold),
-                                                                          float(upper_threshold))
+                                                                          filter_key, (float(lower_threshold),
+                                                                          float(upper_threshold)))
                 print("Recommended Movies: ", rec_result)
 
             else:
