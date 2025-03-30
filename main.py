@@ -3,18 +3,19 @@
 Instructions: run the main method in order to use the menu. Read the project report for more information on running.
 
 This project was created by Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu."""
-import python_ta
 import graph_create
 import graph_display
 import calculations
 
 
 if __name__ == '__main__':
-    python_ta.check_all(config={
-        'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
-        'allowed-io': [],
-        'max-line-length': 120
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
+    #     'allowed-io': [],
+    #     'max-line-length': 120
+    # })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
@@ -43,24 +44,33 @@ if __name__ == '__main__':
             calculations.ranking(average_bacon_numbers_meaningful, int(actor_limit))
 
         if choice == '2':
-            actor_name = str(input("Actor Name: ")).strip()
+            actor_name = str(input("Actor Name (or type RANDOM): ")).strip()
             while not actor_graph.item_in_graph(actor_name):
-                print("Actor not in dataset. Try again.")
-                actor_name = str(input("Actor Name: ").strip())
+                if actor_name == 'RANDOM':
+                    actor_name = actor_graph.get_random_item()
+                else:
+                    print("Actor not in dataset. Try again.")
+                    actor_name = str(input("Actor Name: ").strip())
             print("The Average Bacon Number for", actor_name, "is:", calculations.average_bacon_number(actor_graph,
                                                                                                        actor_name))
             print("The actor is number", list(average_bacon_numbers_meaningful.keys()).index(actor_name) + 1, "out of",
                   len(average_bacon_numbers_meaningful), "in the overall rankings.")
 
         if choice == '3':
-            actor1_name = str(input("Actor 1 Name: ")).strip()
+            actor1_name = str(input("Actor 1 Name (or type RANDOM): ")).strip()
             while not actor_graph.item_in_graph(actor1_name):
-                print("Actor not in dataset. Try again.")
-                actor1_name = str(input("Actor 1 Name: ").strip())
-            actor2_name = str(input("Actor 2 Name: ")).strip()
+                if actor1_name == 'RANDOM':
+                    actor1_name = actor_graph.get_random_item()
+                else:
+                    print("Actor not in dataset. Try again.")
+                    actor1_name = str(input("Actor 1 Name (or type RANDOM): ").strip())
+            actor2_name = str(input("Actor 2 Name (or type RANDOM): ")).strip()
             while not actor_graph.item_in_graph(actor2_name):
-                print("Actor not in dataset. Try again.")
-                actor2_name = str(input("Actor 2 Name: ").strip())
+                if actor2_name == 'RANDOM':
+                    actor2_name = actor_graph.get_random_item()
+                else:
+                    print("Actor not in dataset. Try again.")
+                    actor2_name = str(input("Actor 2 Name (or type RANDOM): ").strip())
             filter_key = str(input("Optional Filters: release date, rating. Type NO if you do not"
                                    " want it to be filtered. ")).strip()
             while filter_key not in {'NO', 'release date', 'rating'}:
@@ -101,10 +111,13 @@ if __name__ == '__main__':
             graph_display.visualize_actor_path(actor_graph, actor_path, (actor1_name, actor2_name))
 
         if choice == '4':
-            movie_name = str(input("Movie Name: ")).strip()
+            movie_name = str(input("Movie Name (or type RANDOM): ")).strip()
             while movie_name not in movie_dict:
-                print("Movie not in dataset, try again.")
-                movie_name = str(input("Movie Name: ").strip())
+                if movie_name == 'RANDOM':
+                    movie_name = calculations.get_random_key(movie_dict)
+                else:
+                    print("Movie not in dataset, try again.")
+                    movie_name = str(input("Movie Name: ").strip())
             movie_limit = input("Number of Recommendations: ").strip()
             while not movie_limit.isnumeric():
                 print("Invalid option, try Again.")
