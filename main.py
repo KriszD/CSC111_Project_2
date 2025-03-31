@@ -12,13 +12,13 @@ import calculations
 
 
 if __name__ == '__main__':
-    # import python_ta
-    #
-    # python_ta.check_all(config={
-    #     'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
-    #     'allowed-io': [],
-    #     'max-line-length': 120
-    # })
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['graph_entities', 'graph_create', 'graph_display', 'calculations'],
+        'allowed-io': [],
+        'max-line-length': 120
+    })
 
     actor_graph, movie_dict = graph_create.initialize_graphs('Datasets/full_dataset.csv')
     average_bacon_numbers = graph_create.create_dict_from_csv('Datasets/average_bacon_numbers.csv')
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                 num = calculations.bacon_number(actor_graph, (actor1_name, actor2_name), movie_dict, filter_key,
                                                 (float(lower_threshold), float(upper_threshold)))
                 if num < 0:
-                    print("These actors share no path.")
+                    print("These actors share no path, possibly due to filtering.")
                 else:
                     print("The Bacon Number between", actor1_name, "and", actor2_name, "is:", num)
                     print("A path between them is: ")
@@ -147,11 +147,17 @@ if __name__ == '__main__':
                 rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit),
                                                                           filter_key, (float(lower_threshold),
                                                                           float(upper_threshold)))
-                print("Recommended Movies: ", rec_result)
+                if rec_result in [{}, []]:
+                    print("There are no recommendations for this movie, possibly due to filtering.")
+                else:
+                    print("Recommended Movies: ", rec_result)
 
             else:
                 rec_result, sim_scores = calculations.get_recommendations(movie_dict, movie_name, int(movie_limit))
-                print("Recommended Movies: ", rec_result)
+                if rec_result in [{}, []]:
+                    print("There are no recommendations for this movie.")
+                else:
+                    print("Recommended Movies: ", rec_result)
 
             movie_graph = graph_create.create_recommended_movie_graph(movie_name, rec_result, sim_scores)
             graph_display.visualize_movie_graph(movie_graph)
