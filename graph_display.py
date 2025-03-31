@@ -306,11 +306,11 @@ def create_node_trace_movie_graph(graph_nx: nx.Graph, pos: dict[any, tuple], bas
     y_values = [pos[n][1] for n in graph_nx.nodes]
     labels = [graph_nx.nodes[n].get('label', n) for n in graph_nx.nodes]
 
-    # Compute node sizes: size = base_main_size * sim_score.
-    # The main movie should have a sim_score of 1.
+    # Compute node sizes based on the similarity scores.
+    # The main movie has a sim_score of 1.
     node_sizes = []
     for node in graph_nx.nodes:
-        sim_val = graph_nx.nodes[node].get('sim', 1)  # default sim=1 for main movie.
+        sim_val = graph_nx.nodes[node].get('sim', 1)
         node_sizes.append(base_main_size * (0.5 + sim_val))
 
     # Create and return the scatter trace for nodes.
