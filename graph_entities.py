@@ -1,4 +1,9 @@
-"""Graph Classes"""
+"""HAM and Bacon - graph_entities.py
+
+Contains Graph and Vertex classes, as well as methods for dealing with Graph and Vertex data.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu."""
+
 from __future__ import annotations
 from collections import deque
 from typing import Any
@@ -39,7 +44,9 @@ class _Vertex:
 
         Preconditions:
             - kind in {'actor', 'movie'}
-            - self.appearences = set() or kind = 'actor'
+            - self.appearences == set() or kind == 'actor'
+            - self.sim_score == 0 or kind == 'movie'
+            - self.movie_info == (0,0,0) or kind == 'movie'
         """
         self.item = item
         self.kind = kind
@@ -50,7 +57,7 @@ class _Vertex:
 
 
 class Graph:
-    """A graph used to represent a book review network.
+    """A graph used to represent a network of actors/movies.
     """
     # Private Instance Attributes:
     #     - _vertices:
@@ -180,7 +187,11 @@ class Graph:
             raise ValueError
 
     def get_appearances(self, actor: str) -> set:
-        """Returns a set of movies an actor has appeared in"""
+        """Returns a set of movies an actor has appeared in
+
+        Preconditions:
+        - actor in self._vertices
+        """
         return self._vertices[actor].appearances
 
     def get_random_item(self) -> Any:
@@ -407,7 +418,7 @@ if __name__ == '__main__':
 
     import python_ta
     python_ta.check_all(config={
-        'extra-imports': ['collections'],  # the names (strs) of imported modules
+        'extra-imports': ['collections', 'random'],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })

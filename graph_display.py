@@ -1,7 +1,11 @@
-"""Functions for diplaying the graph."""
+"""HAM and Bacon - graph_display.py.
+
+This file contains functions for displaying our generated graphs.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu.
+"""
 
 import networkx as nx
-import python_ta
 from plotly.graph_objs import Scatter, Figure
 from graph_entities import Graph
 
@@ -393,6 +397,8 @@ def visualize_movie_graph(movie_graph: Graph, layout: str = 'spring_layout',
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+    import python_ta
     python_ta.check_all(config={
         'extra-imports': ['networkx', 'plotly.graph_objs', 'graph_entities'],  # the names (strs) of imported modules
         'allowed-io': ['visualize_actor_path'],  # the names (strs) of functions that call print/open/input

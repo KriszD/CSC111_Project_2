@@ -1,9 +1,13 @@
-"""All the calculations that are performed for our project."""
-from typing import Any
+"""HAM and Bacon - calculations.py
 
-import python_ta
-from graph_entities import Graph
+This file contains functions for performing calculations on our stored data.
+
+This file is Copyright (c) 2025 Skye Mah-Madjar, Krisztian Drimba, Joshua Iaboni, and Xiayu Lyu.
+"""
+
+from typing import Any
 from random import choice
+from graph_entities import Graph
 
 
 #######################################################################################################################
@@ -283,8 +287,12 @@ def get_random_key(dictionary: dict) -> Any:
 
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+
+    import python_ta
     python_ta.check_all(config={
-        'extra-imports': ['graph_entities', 'graph_create'],
+        'extra-imports': ['graph_entities', 'graph_create', 'random'],
         'allowed-io': ['print_bacon_path', 'ranking'],
         'max-line-length': 120
     })
